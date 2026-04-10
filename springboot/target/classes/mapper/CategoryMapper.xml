@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CategoryMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Category">
+        select category.*, user.name as userName from category
+        left join user on category.user_id = user.id
+        <where>
+            <if test="id != null"> and category.id = #{id}</if>
+            <if test="img != null"> and category.img like concat('%', #{img}, '%')</if>
+            <if test="name != null"> and category.name like concat('%', #{name}, '%')</if>
+            <if test="userId != null"> and category.user_id = #{userId}</if>
+            <if test="userName != null"> and user.name like concat('%', #{userName}, '%')</if>
+            <if test="statusRadio != null"> and category.status_radio like concat('%', #{statusRadio}, '%')</if>
+            <if test="time != null"> and category.time like concat('%', #{time}, '%')</if>
+            <if test="roleRadio != null"> and category.role_radio like concat('%', #{roleRadio}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Category">
+        select * from `category`
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from `category`
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByUserId">
+        delete from `category`
+        where user_id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Category" useGeneratedKeys="true" keyProperty="id">
+        insert into `category`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="img != null">img,</if>
+            <if test="name != null">name,</if>
+            <if test="description != null">description,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="statusRadio != null">status_radio,</if>
+            <if test="time != null">time,</if>
+            <if test="roleRadio != null">role_radio,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="img != null">#{img},</if>
+            <if test="name != null">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="statusRadio != null">#{statusRadio},</if>
+            <if test="time != null">#{time},</if>
+            <if test="roleRadio != null">#{roleRadio},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Category">
+        update `category`
+        <set>
+            <if test="img != null">
+                img = #{img},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="statusRadio != null">
+                status_radio = #{statusRadio},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="roleRadio != null">
+                role_radio = #{roleRadio},
+            </if>
+        </set>
+        where id = #{id} 
+    </update>
+
+</mapper>

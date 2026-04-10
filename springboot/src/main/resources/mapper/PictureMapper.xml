@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.PictureMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Picture">
+        select picture.*, user.name as userName, category.name as categoryName from picture
+        left join user on picture.user_id = user.id
+        left join category on picture.category_id = category.id
+        <where>
+            <if test="id != null"> and picture.id = #{id}</if>
+            <if test="img != null"> and picture.img like concat('%', #{img}, '%')</if>
+            <if test="name != null"> and picture.name like concat('%', #{name}, '%')</if>
+            <if test="description != null"> and picture.description like concat('%', #{description}, '%')</if>
+            <if test="userId != null"> and picture.user_id = #{userId}</if>
+            <if test="userName != null"> and user.name like concat('%', #{userName}, '%')</if>
+            <if test="categoryId != null"> and picture.category_id = #{categoryId}</if>
+            <if test="categoryName != null"> and category.name like concat('%', #{categoryName}, '%')</if>
+            <if test="time != null"> and picture.time like concat('%', #{time}, '%')</if>
+            <if test="roleRadio != null"> and picture.role_radio like concat('%', #{roleRadio}, '%')</if>
+            <if test="statusRadio != null"> and picture.status_radio like concat('%', #{statusRadio}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Picture">
+        select * from `picture`
+        where id = #{id}
+    </select>
+
+    <select id="selectByUserId" resultType="com.example.entity.Picture">
+        select * from picture where user_id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from `picture`
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByCategoryId">
+        delete from picture where category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteByUserId">
+        delete from picture where user_id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Picture" useGeneratedKeys="true" keyProperty="id">
+        insert into `picture`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="img != null">img,</if>
+            <if test="name != null">name,</if>
+            <if test="description != null">description,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="time != null">time,</if>
+            <if test="roleRadio != null">role_radio,</if>
+            <if test="statusRadio != null">status_radio,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="img != null">#{img},</if>
+            <if test="name != null">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="time != null">#{time},</if>
+            <if test="roleRadio != null">#{roleRadio},</if>
+            <if test="statusRadio != null">#{statusRadio},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Picture">
+        update `picture`
+        <set>
+            <if test="img != null">
+                img = #{img},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="time != null">
+                time = #{time},
+            </if>
+            <if test="roleRadio != null">
+                role_radio = #{roleRadio},
+            </if>
+            <if test="statusRadio != null">
+                status_radio = #{statusRadio},
+            </if>
+        </set>
+        where id = #{id} 
+    </update>
+
+</mapper>

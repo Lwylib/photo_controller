@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.AppealMapper">
+
+    <select id="selectAll" resultType="com.example.entity.Appeal">
+        select appeal.*, user.name as userName, category.name as categoryName, category.img as categoryImg from appeal
+        left join user on appeal.user_id = user.id
+        left join category on appeal.category_id = category.id
+        <where>
+            <if test="id != null"> and appeal.id = #{id}</if>
+            <if test="userId != null"> and appeal.user_id = #{userId}</if>
+            <if test="userName != null"> and user.name like concat('%', #{userName}, '%')</if>
+            <if test="categoryId != null"> and appeal.category_id = #{categoryId}</if>
+            <if test="categoryName != null"> and category.name like concat('%', #{categoryName}, '%')</if>
+            <if test="content != null"> and appeal.content like concat('%', #{content}, '%')</if>
+            <if test="status != null"> and appeal.status like concat('%', #{status}, '%')</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectById" resultType="com.example.entity.Appeal">
+        select * from `appeal`
+        where id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        delete from `appeal`
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteByUserId">
+        delete from `appeal`
+        where user_id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Appeal" useGeneratedKeys="true" keyProperty="id">
+        insert into `appeal`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="content != null">content,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Appeal">
+        update `appeal`
+        <set>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id} 
+    </update>
+
+</mapper>
