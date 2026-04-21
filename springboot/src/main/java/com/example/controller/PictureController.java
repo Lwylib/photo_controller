@@ -4,9 +4,11 @@ import cn.hutool.core.util.ObjectUtil;
 import com.example.common.Result;
 import com.example.entity.Category;
 import com.example.entity.Picture;
+import com.example.mapper.CategoryMapper;
 import com.example.service.CategoryService;
 import com.example.service.PictureService;
 import com.github.pagehelper.PageInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 
@@ -22,6 +24,10 @@ public class PictureController {
 
     @Resource
     private PictureService pictureService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     /**
      * 新增
@@ -93,23 +99,30 @@ public class PictureController {
         List<String> xList = new ArrayList<>();
         List<Long> yList = new ArrayList<>();
 
-        Map<String, Object> map = new HashMap<>();
+        List<Category> list = categoryMapper.selectByHotPoint(null);
 
-        // 查询出所有图片
-        Picture picture = new Picture();
-        picture.setStatusRadio("审核通过");
-        List<Picture> pictures = pictureService.selectAll(picture);
-
-        Map<String, Long> collect = pictures.stream()
-                .filter(x -> ObjectUtil.isNotEmpty(x.getCategoryName()))
-                .collect(Collectors.groupingBy(Picture::getCategoryName, Collectors.counting()))
-                .entrySet().stream()
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-        for (String categoryName : collect.keySet()) {
-            xList.add(categoryName);
-            yList.add(collect.get(categoryName));
+        for(Category x : list) {
+            xList.add(x.getName());
+            yList.add(Long.valueOf(x.getHotPoint()));
         }
+
+        Map<String, Object> map = new HashMap<>();
+        //
+        // // 查询出所有图片
+        // Picture picture = new Picture();
+        // picture.setStatusRadio("审核通过");
+        // List<Picture> pictures = pictureService.selectAll(picture);
+        //
+        // Map<String, Long> collect = pictures.stream()
+        //         .filter(x -> ObjectUtil.isNotEmpty(x.getCategoryName()))
+        //         .collect(Collectors.groupingBy(Picture::getCategoryName, ))
+        //         .entrySet().stream()
+        //         .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+        //         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        // for (String categoryName : collect.keySet()) {
+        //     xList.add(categoryName);
+        //     yList.add(collect.get(categoryName));
+        // }
 
         map.put("xList", xList);
         map.put("yList", yList);

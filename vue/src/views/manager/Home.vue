@@ -34,24 +34,27 @@ const loadNotice = () => {
 loadNotice()
 
 const loadBar = () => {
-  request.get('/picture/bar').then(res => {
-    if (res.code === '200') {
-      let chartDom = document.getElementById('bar')
-      let myChart = echarts.init(chartDom)
-      barOptions.xAxis.data = res.data.xList
-      barOptions.series[0].data = res.data.yList
-      myChart.setOption(barOptions)
-    } else {
-      ElMessage.error(res.msg)
-    }
-  })
+  // 只在用户是管理员时才调用bar接口
+  if (data.user.role === 'ADMIN') {
+    request.get('/picture/bar').then(res => {
+      if (res.code === '200') {
+        let chartDom = document.getElementById('bar')
+        let myChart = echarts.init(chartDom)
+        barOptions.xAxis.data = res.data.xList
+        barOptions.series[0].data = res.data.yList
+        myChart.setOption(barOptions)
+      } else {
+        ElMessage.error(res.msg)
+      }
+    })
+  }
 }
 loadBar()
 
 // 柱状图
 let barOptions = {
   title: {
-    text: '相册照片数量Top10柱状图', // 主标题
+    text: '相册热度Top10柱状图', // 主标题
     subtext: '统计维度：相册名称', // 副标题
     left: 'center'
   },
@@ -77,7 +80,7 @@ let barOptions = {
   },
   yAxis: {
     type: 'value',
-    name: '照片数量',
+    name: '热度',
   },
   tooltip: {
     trigger: 'item',
@@ -97,4 +100,3 @@ let barOptions = {
   ]
 };
 </script>
-

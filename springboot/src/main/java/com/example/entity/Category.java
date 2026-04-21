@@ -22,6 +22,11 @@ public class Category {
     private String roleRadio;
     private String userName;
     private String userAvatar;
+
+    /** 浏览量 */
+    private Integer viewCount;
+    /** 收藏数 */
+    private Integer collectCount;
     private Integer hotPoint;
 
     public Integer getId() {
@@ -111,5 +116,21 @@ public class Category {
 
     public void setHotPoint(Integer hotPoint) {
         this.hotPoint = hotPoint;
+    }
+
+    public Integer getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(Integer viewCount) {
+        this.viewCount = viewCount;
+    }
+
+    public Integer getCollectCount() {
+        return collectCount;
+    }
+
+    public void setCollectCount(Integer collectCount) {
+        this.collectCount = collectCount;
     }
 }

@@ -105,4 +105,24 @@ public class CategoryController {
         return Result.success(page);
     }
 
+    /**
+     * 热度相册分页查询
+     */
+    @GetMapping("/selectHotAlbumPage")
+    public Result selectHotAlbumPage(Category category,
+                             @RequestParam(defaultValue = "1") Integer pageNum,
+                             @RequestParam(defaultValue = "10") Integer pageSize) {
+        PageInfo<Category> page = categoryService.selectHotAlbumPage(category, pageNum, pageSize);
+        return Result.success(page);
+    }
+
+    /**
+     * 增加相册浏览量
+     */
+    @PutMapping("/increaseViewCount/{id}")
+    public Result increaseViewCount(@PathVariable Integer id) {
+        categoryService.increaseViewCount(id);
+        return Result.success();
+    }
+
 }

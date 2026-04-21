@@ -29,9 +29,14 @@ public interface CategoryMapper {
     Category selectById(Integer id);
 
     /**
-      * 查询所有
-    */
+     * 查询所有
+     */
     List<Category> selectAll(Category category);
+
+    /**
+     * 按热度排序查询
+     */
+    List<Category> selectByHotPoint(Category category);
 
     void deleteByUserId(Integer id);
 }

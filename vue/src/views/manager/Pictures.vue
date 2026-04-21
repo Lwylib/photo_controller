@@ -63,8 +63,19 @@ const loadCategory = () => {
     if (res.code === '200') {
       data.categoryData = res.data
       load()
+      // 增加相册浏览量
+      increaseViewCount()
     } else {
       ElMessage.error(res.msg)
+    }
+  })
+}
+
+// 增加相册浏览量
+const increaseViewCount = () => {
+  request.put('/category/increaseViewCount/' + data.categoryId).then(res => {
+    if (res.code === '200') {
+      console.log('浏览量增加成功')
     }
   })
 }

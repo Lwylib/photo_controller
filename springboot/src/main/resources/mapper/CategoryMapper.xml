@@ -16,8 +16,11 @@
             <if test="statusRadio != null"> and category.status_radio like concat('%', #{statusRadio}, '%')</if>
             <if test="time != null"> and category.time like concat('%', #{time}, '%')</if>
             <if test="roleRadio != null"> and category.role_radio like concat('%', #{roleRadio}, '%')</if>
+            <if test="viewCount != null"> and category.view_count = #{viewCount}</if>
+            <if test="collectCount != null"> and category.collect_count = #{collectCount}</if>
+            <if test="hotPoint != null"> and category.hot_point = #{hotPoint}</if>
         </where>
-        order by time desc
+        order by time desc, id desc
     </select>
 
     <select id="selectById" resultType="com.example.entity.Category">
@@ -46,6 +49,9 @@
             <if test="statusRadio != null">status_radio,</if>
             <if test="time != null">time,</if>
             <if test="roleRadio != null">role_radio,</if>
+            <if test="viewCount != null">view_count,</if>
+            <if test="collectCount != null">collect_count,</if>
+            <if test="hotPoint != null">hot_point,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -56,6 +62,9 @@
             <if test="statusRadio != null">#{statusRadio},</if>
             <if test="time != null">#{time},</if>
             <if test="roleRadio != null">#{roleRadio},</if>
+            <if test="viewCount != null">#{viewCount},</if>
+            <if test="collectCount != null">#{collectCount},</if>
+            <if test="hotPoint != null">#{hotPoint},</if>
         </trim>
     </insert>
 
@@ -83,8 +92,34 @@
             <if test="roleRadio != null">
                 role_radio = #{roleRadio},
             </if>
+            <if test="viewCount != null">
+                view_count = #{viewCount},
+            </if>
+            <if test="collectCount != null">
+                collect_count = #{collectCount},
+            </if>
+            <if test="hotPoint != null">
+                hot_point = #{hotPoint},
+            </if>
         </set>
         where id = #{id} 
     </update>
+
+    <!-- 按热度排序查询 -->
+    <select id="selectByHotPoint" resultType="com.example.entity.Category">
+        select category.*, user.name as userName from category
+        left join user on category.user_id = user.id
+        <where>
+            <if test="id != null"> and category.id = #{id}</if>
+            <if test="img != null"> and category.img like concat('%', #{img}, '%')</if>
+            <if test="name != null"> and category.name like concat('%', #{name}, '%')</if>
+            <if test="userId != null"> and category.user_id = #{userId}</if>
+            <if test="userName != null"> and user.name like concat('%', #{userName}, '%')</if>
+            <if test="statusRadio != null"> and category.status_radio like concat('%', #{statusRadio}, '%')</if>
+            <if test="time != null"> and category.time like concat('%', #{time}, '%')</if>
+            <if test="roleRadio != null"> and category.role_radio like concat('%', #{roleRadio}, '%')</if>
+        </where>
+        order by hot_point desc, view_count desc, collect_count desc
+    </select>
 
 </mapper>

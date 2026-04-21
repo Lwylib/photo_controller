@@ -2,6 +2,10 @@
   <div>
     <div class="card" style="margin-bottom: 5px;">
       <el-input v-model="data.name" placeholder="请输入相册名称查询" style="width: 240px; margin-right: 5px"></el-input>
+      <el-select v-model="data.sortType" placeholder="排序方式" style="width: 120px; margin-right: 5px">
+        <el-option label="默认排序" value="default"></el-option>
+        <el-option label="热度排序" value="hot"></el-option>
+      </el-select>
       <el-button type="info" plain style="margin-left: 10px" @click="load">查询</el-button>
       <el-button type="warning" plain style="margin-left: 10px" @click="reset">重置</el-button>
     </div>
@@ -24,8 +28,26 @@
                 <el-tag v-else type="danger" size="large">{{ item.roleRadio }}</el-tag>
                 <el-tag v-if="item.statusRadio === '正常'" size="large" type="success">{{ item.statusRadio }}</el-tag>
                 <el-tag v-else type="danger" size="large">{{ item.statusRadio }}</el-tag>
+                <!-- 热度信息 -->
+                <div style="display: flex; align-items: center; grid-gap: 5px; margin-left: auto">
+                  <el-tooltip content="浏览量" placement="top">
+                    <div style="display: flex; align-items: center; color: #666;">
+                      <el-icon><View /></el-icon>
+                      <span style="margin-left: 2px">{{ item.viewCount || 0 }}</span>
+                    </div>
+                  </el-tooltip>
+                  <el-tooltip content="收藏数" placement="top">
+                    <div style="display: flex; align-items: center; color: #666;">
+                      <el-icon><Star /></el-icon>
+                      <span style="margin-left: 2px">{{ item.collectCount || 0 }}</span>
+                    </div>
+                  </el-tooltip>
+                  <el-tooltip content="热度值" placement="top">
+                    <el-tag type="warning" size="small">{{ item.hotPoint || 0 }}</el-tag>
+                  </el-tooltip>
+                </div>
                 <!-- 管理员操作按钮 -->
-                <div v-if="data.user.role === 'ADMIN'" style="margin-left: auto">
+                <div v-if="data.user.role === 'ADMIN'" style="margin-left: 10px">
                   <el-button v-if="item.statusRadio !== '违规'" size="small" type="danger" @click="markAsViolated(item)">标记违规</el-button>
                   <el-button v-else size="small" type="success" @click="markAsNormal(item)">恢复正常</el-button>
                 </div>
@@ -46,8 +68,8 @@
 import { reactive } from "vue"
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {Delete, Edit} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
+import {Delete, Edit, View, Star} from "@element-plus/icons-vue";
 const data = reactive({
   user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
   tableData: [],
@@ -55,6 +77,7 @@ const data = reactive({
   pageNum: 1,  // 当前的页码
   pageSize: 6,  // 每页的个数
   name: null,
+  sortType: 'default', // 排序方式：default-默认，hot-热度
 })
 
 const navTo = (url) => {
@@ -63,7 +86,8 @@ const navTo = (url) => {
 
 // 加载表格数据
 const load = () => {
-  request.get('/category/selectAlbumPage', {
+  const apiUrl = data.sortType === 'hot' ? '/category/selectHotAlbumPage' : '/category/selectAlbumPage'
+  request.get(apiUrl, {
     params: {
       pageNum: data.pageNum,
       pageSize: data.pageSize,
