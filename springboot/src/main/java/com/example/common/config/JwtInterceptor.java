@@ -22,7 +22,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 /**
  * jwt拦截器
  */
-@Component
+// @Component
 public class JwtInterceptor implements HandlerInterceptor {
 
 
