@@ -3,6 +3,7 @@ package com.example.service;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.example.common.BaseContext;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.entity.Category;
@@ -137,10 +138,10 @@ public class CategoryService {
             }
             // 计算热度值
             // if(new Random().nextInt(0,100) < 10) {
-                calculateHotPoint(dbCategory);
+            //     calculateHotPoint(dbCategory);
             // }
         }
-        // Collections.shuffle(list);
+        Collections.shuffle(list);
         return PageInfo.of(list);
     }
 
@@ -157,7 +158,7 @@ public class CategoryService {
                 dbCategory.setUserAvatar(user.getAvatar());
             }
             // 计算热度值
-            calculateHotPoint(dbCategory);
+            // calculateHotPoint(dbCategory);
         }
         return PageInfo.of(list);
     }
@@ -191,6 +192,10 @@ public class CategoryService {
      */
     public void increaseViewCount(Integer categoryId) {
         Category category = categoryMapper.selectById(categoryId);
+        //自己看不加浏览量
+        if (BaseContext.getCurrentId().equals(category.getUserId())) {
+            return;
+        }
         if (category != null) {
             category.setViewCount(category.getViewCount() + 1);
             double hotPoint = category.getViewCount() * 0.3 + category.getCollectCount() * 0.7;

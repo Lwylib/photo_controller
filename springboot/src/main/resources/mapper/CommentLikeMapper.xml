@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CommentLikeMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.entity.CommentLike">
+        <id column="id" property="id"/>
+        <result column="comment_id" property="commentId"/>
+        <result column="user_id" property="userId"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.entity.CommentLike" useGeneratedKeys="true" keyProperty="id">
+        insert into `comment_like`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="commentId != null">comment_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="commentId != null">#{commentId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteById">
+        delete from `comment_like` where id = #{id}
+    </delete>
+
+    <delete id="deleteByCommentIdAndUserId">
+        delete from `comment_like` where comment_id = #{commentId} and user_id = #{userId}
+    </delete>
+
+    <delete id="deleteByCommentId">
+        delete from `comment_like` where comment_id = #{commentId}
+    </delete>
+
+    <select id="selectByCommentId" resultMap="BaseResultMap">
+        select * from `comment_like` where comment_id = #{commentId}
+    </select>
+
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select * from `comment_like` where user_id = #{userId}
+    </select>
+
+    <select id="selectByCommentIdAndUserId" resultMap="BaseResultMap">
+        select * from `comment_like` where comment_id = #{commentId} and user_id = #{userId}
+    </select>
+
+    <select id="countByCommentId" resultType="int">
+        select count(*) from `comment_like` where comment_id = #{commentId}
+    </select>
+
+</mapper><?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.CommentLikeMapper">
+</mapper>

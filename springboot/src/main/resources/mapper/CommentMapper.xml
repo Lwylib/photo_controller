@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CommentMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.entity.Comment">
+        <id column="id" property="id"/>
+        <result column="category_id" property="categoryId"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="create_time" property="createTime"/>
+        <result column="status" property="status"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.example.entity.Comment" useGeneratedKeys="true" keyProperty="id">
+        insert into `comment`
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="content != null">content,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="likeCount != null">like_count,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="likeCount != null">#{likeCount},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteById">
+        delete from `comment` where id = #{id}
+    </delete>
+
+    <delete id="deleteByCategoryId">
+        delete from `comment` where category_id = #{categoryId}
+    </delete>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select * from `comment` where id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select * from `comment`
+        <where>
+            <if test="id != null"> and id = #{id}</if>
+            <if test="categoryId != null"> and category_id = #{categoryId}</if>
+            <if test="userId != null"> and user_id = #{userId}</if>
+            <if test="content != null"> and content like concat('%', #{content}, '%')</if>
+            <if test="parentId != null"> and parent_id = #{parentId}</if>
+            <if test="likeCount != null"> and like_count = #{likeCount}</if>
+            <if test="status != null"> and status like concat('%', #{status}, '%')</if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectTopLevelByCategoryId" resultMap="BaseResultMap">
+        select comment.*, user.name as userName, user.avatar as userAvatar
+        from `comment`
+        left join `user` on comment.user_id = user.id
+        where category_id = #{categoryId} and parent_id = 0 and status = '正常'
+        order by create_time desc
+    </select>
+
+    <select id="selectRepliesByParentId" resultMap="BaseResultMap">
+        select comment.*, user.name as userName, user.avatar as userAvatar
+        from `comment`
+        left join `user` on comment.user_id = user.id
+        where parent_id = #{parentId} and status = '正常'
+        order by create_time asc
+    </select>
+
+    <select id="selectRepliesByCategoryId" resultMap="BaseResultMap">
+        select comment.*, user.name as userName, user.avatar as userAvatar
+        from `comment`
+        left join `user` on comment.user_id = user.id
+        where category_id = #{categoryId} and parent_id > 0 and status = '正常'
+        order by create_time asc
+    </select>
+
+    <update id="updateLikeCount">
+        update `comment` set like_count = #{likeCount} where id = #{id}
+    </update>
+
+</mapper><?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.example.mapper.CommentMapper">
+</mapper>
