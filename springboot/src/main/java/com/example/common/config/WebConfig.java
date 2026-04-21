@@ -9,8 +9,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // @Autowired
-    private JwtInterceptor jwtInterceptor = new JwtInterceptor();
+    @Autowired
+    private JwtInterceptor jwtInterceptor;
 
     // 加自定义拦截器JwtInterceptor，设置拦截规则
     @Override

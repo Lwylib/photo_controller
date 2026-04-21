@@ -30,7 +30,7 @@ public class CommentService {
         comment.setCreateTime(LocalDateTime.now());
         comment.setLikeCount(0);
         comment.setStatus("正常");
-        
+
         // 验证父评论是否存在（如果是回复）
         if (comment.getParentId() != null && comment.getParentId() > 0) {
             Comment parentComment = commentMapper.selectById(comment.getParentId());
@@ -40,7 +40,7 @@ public class CommentService {
             // 确保回复的相册ID与父评论一致
             comment.setCategoryId(parentComment.getCategoryId());
         }
-        
+
         commentMapper.insert(comment);
     }
 
@@ -64,29 +64,29 @@ public class CommentService {
     public List<Comment> getCommentsByCategoryId(Integer categoryId) {
         // 获取顶级评论
         List<Comment> topLevelComments = commentMapper.selectTopLevelByCategoryId(categoryId);
-        
+
         if (topLevelComments.isEmpty()) {
             return topLevelComments;
         }
-        
+
         // 获取顶级评论的ID列表
         List<Integer> topLevelCommentIds = topLevelComments.stream()
                 .map(Comment::getId)
                 .collect(Collectors.toList());
-        
+
         // 批量查询回复
         List<Comment> allReplies = commentMapper.selectRepliesByCategoryId(categoryId);
-        
+
         // 按父评论ID分组
         Map<Integer, List<Comment>> repliesByParentId = allReplies.stream()
                 .collect(Collectors.groupingBy(Comment::getParentId));
-        
+
         // 将回复组装到对应的顶级评论中
         for (Comment topComment : topLevelComments) {
             List<Comment> replies = repliesByParentId.get(topComment.getId());
             topComment.setReplies(replies != null ? replies : new ArrayList<>());
         }
-        
+
         return topLevelComments;
     }
 
