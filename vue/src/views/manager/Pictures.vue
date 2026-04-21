@@ -347,35 +347,65 @@ const submitComment = () => {
 }
 
 // 加载评论
-const loadComments = () => {
-  request.get(`/comment/selectByCategoryId/${data.categoryId}`, {
-    params: {
-      pageNum: data.commentPageNum,
-      pageSize: data.commentPageSize
-    }
-  }).then(res => {
+const loadComments = async () => {
+  try {
+    const res = await request.get(`/comment/selectByCategoryId/${data.categoryId}`, {
+      params: {
+        pageNum: data.commentPageNum,
+        pageSize: data.commentPageSize
+      }
+    });
+    
     if (res.code === '200') {
       const pageInfo = res.data;
       // 从分页对象中获取评论列表
       if (pageInfo && Array.isArray(pageInfo.list)) {
         // 为每个评论添加点赞状态
-        const commentsWithLikeStatus = pageInfo.list.map(comment => ({
-          ...comment,
-          liked: false // 初始状态，后续会通过API检查
-        }));
+        const commentsWithLikeStatus = await Promise.all(
+          pageInfo.list.map(async (comment) => {
+            try {
+              // 同步检查点赞状态
+              const isLikedRes = await request.get(`/comment/isLiked/${comment.id}`);
+              const isLiked = isLikedRes.data;
+              
+              // 检查回复的点赞状态
+              if (comment.replies && Array.isArray(comment.replies)) {
+                const repliesWithLikeStatus = await Promise.all(
+                  comment.replies.map(async (reply) => {
+                    try {
+                      const replyLikedRes = await request.get(`/comment/isLiked/${reply.id}`);
+                      return {
+                        ...reply,
+                        liked: replyLikedRes.data
+                      };
+                    } catch (error) {
+                      console.error('检查回复点赞状态失败:', error);
+                      return {
+                        ...reply,
+                        liked: false
+                      };
+                    }
+                  })
+                );
+                comment.replies = repliesWithLikeStatus;
+              }
+              
+              return {
+                ...comment,
+                liked: isLiked
+              };
+            } catch (error) {
+              console.error('检查评论点赞状态失败:', error);
+              return {
+                ...comment,
+                liked: false
+              };
+            }
+          })
+        );
         
         data.comments = commentsWithLikeStatus;
         data.commentTotal = pageInfo.total || 0; // 设置评论总数
-        
-        // 异步检查每个评论的点赞状态
-        commentsWithLikeStatus.forEach(async (comment) => {
-          try {
-            const isLikedRes = await request.get(`/comment/isLiked/${comment.id}`);
-            comment.liked = isLikedRes.data;
-          } catch (error) {
-            console.error('检查点赞状态失败:', error);
-          }
-        });
       } else {
         console.error('评论数据格式错误:', res.data);
         data.comments = [];
@@ -386,11 +416,11 @@ const loadComments = () => {
       data.comments = [];
       data.commentTotal = 0;
     }
-  }).catch(error => {
+  } catch (error) {
     console.error('加载评论失败:', error);
     data.comments = [];
     data.commentTotal = 0;
-  });
+  }
 }
 
 // 在加载相册信息后调用加载评论
