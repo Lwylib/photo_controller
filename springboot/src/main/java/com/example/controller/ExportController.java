@@ -22,7 +22,7 @@ public class ExportController {
      * @return ZIP文件下载响应
      */
     @GetMapping("/album/{categoryId}")
-    public ResponseEntity<Resource> exportAlbumImages(@PathVariable Integer categoryId) {
+    public ResponseEntity<org.springframework.core.io.Resource> exportAlbumImages(@PathVariable Integer categoryId) {
         return exportService.exportAlbumImages(categoryId);
     }
 }

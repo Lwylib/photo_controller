@@ -9,7 +9,7 @@ import com.example.entity.Picture;
 import com.example.utils.TokenUtils;
 import jakarta.annotation.Resource;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+// import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +37,7 @@ public class ExportService {
      * @param categoryId 相册ID
      * @return 包含ZIP文件的ResponseEntity
      */
-    public ResponseEntity<Resource> exportAlbumImages(Integer categoryId) {
+    public ResponseEntity<org.springframework.core.io.Resource> exportAlbumImages(Integer categoryId) {
         try {
             // 查询相册中的所有照片
             Picture pictureParam = new Picture();
@@ -45,8 +45,9 @@ public class ExportService {
             List<Picture> allPictures = pictureService.selectAll(pictureParam);
             
             // 根据用户权限过滤可下载的照片
-            List<Picture> downloadablePictures = filterDownloadablePictures(allPictures);
-            
+            // List<Picture> downloadablePictures = filterDownloadablePictures(allPictures);
+            List<Picture> downloadablePictures = allPictures;
+
             if (downloadablePictures.isEmpty()) {
                 throw new RuntimeException("没有可下载的照片");
             }
@@ -78,7 +79,7 @@ public class ExportService {
             FileUtil.del(tempDir);
             
             // 准备下载响应
-            Resource resource = new FileSystemResource(zipFile);
+            org.springframework.core.io.Resource resource = new FileSystemResource(zipFile);
             
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"album_" + categoryId + ".zip\"")
@@ -91,33 +92,33 @@ public class ExportService {
         }
     }
 
-    /**
-     * 根据用户权限过滤可下载的照片
-     * @param pictures 原始照片列表
-     * @return 可下载的照片列表
-     */
-    private List<Picture> filterDownloadablePictures(List<Picture> pictures) {
-        List<Picture> result = new ArrayList<>();
-        
-        for (Picture picture : pictures) {
-            // 管理员可以下载所有照片
-            if (RoleEnum.ADMIN.name().equals(TokenUtils.getCurrentUser().getRole())) {
-                result.add(picture);
-                continue;
-            }
-            
-            // 相册创建者可以下载所有照片
-            if (picture.getUserId().equals(BaseContext.getCurrentId())) {
-                result.add(picture);
-                continue;
-            }
-            
-            // 其他用户只能下载公开且审核通过的照片
-            if ("公开".equals(picture.getRoleRadio()) && "审核通过".equals(picture.getStatusRadio())) {
-                result.add(picture);
-            }
-        }
-        
-        return result;
-    }
+    // /**
+    //  * 根据用户权限过滤可下载的照片
+    //  * @param pictures 原始照片列表
+    //  * @return 可下载的照片列表
+    //  */
+    // private List<Picture> filterDownloadablePictures(List<Picture> pictures) {
+    //     List<Picture> result = new ArrayList<>();
+    //
+    //     for (Picture picture : pictures) {
+    //         // 管理员可以下载所有照片
+    //         if (RoleEnum.ADMIN.name().equals(TokenUtils.getCurrentUser().getRole())) {
+    //             result.add(picture);
+    //             continue;
+    //         }
+    //
+    //         // 相册创建者可以下载所有照片
+    //         if (picture.getUserId().equals(BaseContext.getCurrentId())) {
+    //             result.add(picture);
+    //             continue;
+    //         }
+    //
+    //         // 其他用户只能下载公开且审核通过的照片
+    //         if ("公开".equals(picture.getRoleRadio()) && "审核通过".equals(picture.getStatusRadio())) {
+    //             result.add(picture);
+    //         }
+    //     }
+    //
+    //     return result;
+    // }
 }
