@@ -170,7 +170,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue"
+import { reactive, watch } from "vue"
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
 import router from "@/router/index.js";
@@ -314,6 +314,192 @@ const exportAlbum = (item) => {
   });
 }
 
+// 发表评论
+const submitComment = (item) => {
+  const content = data.commentContent[item.id];
+  if (!content || content.trim() === '') {
+    ElMessage.warning('请输入评论内容');
+    return;
+  }
+  
+  data.commentLoading[item.id] = true;
+  
+  request.post('/comment/add', {
+    categoryId: item.id,
+    content: content.trim(),
+    parentId: 0 // 顶级评论
+  }).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('评论发表成功');
+      data.commentContent[item.id] = '';
+      // 重新加载评论
+      loadComments(item.id);
+    } else {
+      ElMessage.error(res.msg);
+    }
+  }).catch(error => {
+    console.error('发表评论失败:', error);
+    ElMessage.error('发表评论失败');
+  }).finally(() => {
+    data.commentLoading[item.id] = false;
+  });
+}
+
+// 回复评论
+const submitReply = (comment, item) => {
+  const content = data.replyContent[comment.id];
+  if (!content || content.trim() === '') {
+    ElMessage.warning('请输入回复内容');
+    return;
+  }
+  
+  request.post('/comment/add', {
+    categoryId: item.id,
+    content: content.trim(),
+    parentId: comment.id // 回复评论
+  }).then(res => {
+    if (res.code === '200') {
+      ElMessage.success('回复成功');
+      data.replyContent[comment.id] = '';
+      data.replyingCommentId = null;
+      // 重新加载评论
+      loadComments(item.id);
+    } else {
+      ElMessage.error(res.msg);
+    }
+  }).catch(error => {
+    console.error('回复失败:', error);
+    ElMessage.error('回复失败');
+  });
+}
+
+// 取消回复
+const cancelReply = (comment) => {
+  data.replyContent[comment.id] = '';
+  data.replyingCommentId = null;
+}
+
+// 显示/隐藏回复框
+const toggleReply = (comment, item) => {
+  if (data.replyingCommentId === comment.id) {
+    data.replyingCommentId = null;
+  } else {
+    data.replyingCommentId = comment.id;
+    data.replyContent[comment.id] = '';
+  }
+}
+
+// 点赞/取消点赞
+const toggleLike = async (comment) => {
+  try {
+    // 检查当前点赞状态
+    const isLikedRes = await request.get(`/comment/isLiked/${comment.id}`);
+    const isLiked = isLikedRes.data;
+    
+    if (isLiked) {
+      // 取消点赞
+      const res = await request.post(`/comment/unlike/${comment.id}`);
+      if (res.code === '200') {
+        comment.liked = false;
+        comment.likeCount = (comment.likeCount || 1) - 1;
+        ElMessage.success('取消点赞成功');
+      }
+    } else {
+      // 点赞
+      const res = await request.post(`/comment/like/${comment.id}`);
+      if (res.code === '200') {
+        comment.liked = true;
+        comment.likeCount = (comment.likeCount || 0) + 1;
+        ElMessage.success('点赞成功');
+      }
+    }
+  } catch (error) {
+    console.error('点赞操作失败:', error);
+    ElMessage.error('操作失败');
+  }
+}
+
+// 加载评论
+const loadComments = (categoryId) => {
+  request.get(`/comment/selectByCategoryId/${categoryId}`).then(res => {
+    if (res.code === '200') {
+      // 为每个评论添加点赞状态
+      const commentsWithLikeStatus = res.data.map(comment => ({
+        ...comment,
+        liked: false // 初始状态，后续会通过API检查
+      }));
+      
+      data.comments[categoryId] = commentsWithLikeStatus;
+      
+      // 异步检查每个评论的点赞状态
+      commentsWithLikeStatus.forEach(async (comment) => {
+        try {
+          const isLikedRes = await request.get(`/comment/isLiked/${comment.id}`);
+          comment.liked = isLikedRes.data;
+        } catch (error) {
+          console.error('检查点赞状态失败:', error);
+        }
+      });
+    }
+  }).catch(error => {
+    console.error('加载评论失败:', error);
+  });
+}
+
+// 加载更多评论
+const loadMoreComments = (item) => {
+  // 这里可以实现分页加载更多评论
+  ElMessage.info('加载更多评论功能待实现');
+}
+
+// 格式化时间
+const formatTime = (timeStr) => {
+  if (!timeStr) return '';
+  
+  try {
+    const date = new Date(timeStr);
+    const now = new Date();
+    const diff = now - date;
+    
+    // 转换为分钟
+    const minutes = Math.floor(diff / 60000);
+    
+    if (minutes < 1) return '刚刚';
+    if (minutes < 60) return `${minutes}分钟前`;
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}小时前`;
+    
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}天前`;
+    
+    // 超过一周显示具体日期
+    return date.toLocaleDateString();
+  } catch (error) {
+    return timeStr;
+  }
+}
+
+// 初始化时加载评论
+const initComments = () => {
+  // 可以在加载相册数据后调用
+}
+
 load()
+
+// 监听相册数据变化，加载评论
+watch(() => data.tableData, (newVal) => {
+  if (newVal && newVal.length > 0) {
+    newVal.forEach(item => {
+      // 为每个相册初始化评论数据
+      if (!data.comments[item.id]) {
+        data.comments[item.id] = [];
+        data.commentContent[item.id] = '';
+      }
+      // 加载评论
+      loadComments(item.id);
+    });
+  }
+}, { immediate: true });
 
 </script>
