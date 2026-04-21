@@ -29,8 +29,12 @@
             <el-tag v-if="scope.row.statusRadio === '违规'" type="danger">{{ scope.row.statusRadio }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" width="160" fixed="right">
           <template v-slot="scope">
+            <el-button type="primary" size="small" @click="exportAlbum(scope.row)" :loading="data.exportLoading[scope.row.id]">
+              <el-icon><Download /></el-icon>
+              导出
+            </el-button>
             <el-button type="primary" circle :icon="Edit" @click="handleEdit(scope.row)"></el-button>
           </template>
         </el-table-column>
@@ -45,11 +49,22 @@
               <div style="font-size: 18px">{{ item.name }}</div>
               <div style="margin-top: 10px; color: #666666; text-align: justify; height: 100px; line-height: 20px" class="line5">{{ item.description }}</div>
               <div style="margin-top: 5px; color: #666666">创建时间：{{ item.time }}</div>
-              <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 10px">
+              <!-- 第一行：状态标签 -->
+              <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 10px; flex-wrap: wrap;">
                 <el-tag v-if="item.roleRadio === '公开'" size="large" type="success">{{ item.roleRadio }}</el-tag>
                 <el-tag v-else type="danger" size="large">{{ item.roleRadio }}</el-tag>
                 <el-tag v-if="item.statusRadio === '正常'" size="large" type="success">{{ item.statusRadio }}</el-tag>
                 <el-tag v-else type="danger" size="large">{{ item.statusRadio }}</el-tag>
+              </div>
+              
+              <!-- 第二行：操作按钮 -->
+              <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 10px; flex-wrap: wrap;">
+                <!-- 导出按钮 -->
+                <el-button type="primary" size="small" @click="exportAlbum(item)" :loading="data.exportLoading[item.id]">
+                  <el-icon><Download /></el-icon>
+                  导出
+                </el-button>
+                
                 <el-icon size="30" style="cursor: pointer; color: #4486ea" @click="handleEdit(item)"><Edit /></el-icon>
                 <el-icon size="26" style="cursor: pointer; color: red" @click="del(item.id)"><Delete /></el-icon>
                 <el-icon size="26" style="cursor: pointer; color: #30cbc5" @click="handleSubmit(item)" v-if="item.statusRadio === '违规'"><Position /></el-icon>
@@ -121,7 +136,7 @@
 import { reactive, ref } from "vue"
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {Delete, Edit} from "@element-plus/icons-vue";
+import {Delete, Edit, Download, Position} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 const baseUrl = import.meta.env.VITE_BASE_URL
 const data = reactive({
@@ -132,6 +147,7 @@ const data = reactive({
   pageSize: 6,  // 每页的个数
   formVisible: false,
   appealVisible: false,
+  exportLoading: {}, // 导出加载状态,
   form: {},
   ids: [],
   name: null,
@@ -264,6 +280,54 @@ const reset = () => {
   data.name = null
   data.userName = null
   load()
+}
+
+// 导出相册
+const exportAlbum = (item) => {
+  // 设置导出加载状态
+  data.exportLoading[item.id] = true;
+
+  // 创建隐藏的下载链接
+  const link = document.createElement('a');
+  link.style.display = 'none';
+
+  // 构建完整的下载URL，包含token
+  const downloadUrl = request.defaults.baseURL + '/export/album/' + item.id;
+
+  // 使用fetch API发送带token的请求
+  fetch(downloadUrl, {
+    headers: {
+      'token': data.user.token
+    }
+  })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('导出失败');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        // 创建下载链接
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', `album_${item.id}.zip`);
+        document.body.appendChild(link);
+        link.click();
+
+        // 清理
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+
+        ElMessage.success('相册导出成功');
+      })
+      .catch(error => {
+        console.error('导出失败:', error);
+        ElMessage.error('导出失败，请稍后重试');
+      })
+      .finally(() => {
+        // 清除加载状态
+        data.exportLoading[item.id] = false;
+      });
 }
 
 load()

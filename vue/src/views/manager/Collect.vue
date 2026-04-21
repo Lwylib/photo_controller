@@ -15,8 +15,12 @@
             <div style="cursor: pointer; color: #4486ea" @click="navTo('/manager/pictures?id=' + scope.row.categoryId)">{{ scope.row.categoryName }}</div>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100" fixed="right">
+        <el-table-column label="操作" width="160" fixed="right">
           <template v-slot="scope">
+            <el-button type="primary" size="small" @click="exportAlbum(scope.row)" :loading="data.exportLoading[scope.row.categoryId]">
+              <el-icon><Download /></el-icon>
+              导出
+            </el-button>
             <el-button type="danger" circle :icon="Delete" @click="del(scope.row.id)"></el-button>
           </template>
         </el-table-column>
@@ -34,7 +38,7 @@
 import { reactive } from "vue"
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
-import {Delete, Edit} from "@element-plus/icons-vue";
+import {Delete, Edit, Download} from "@element-plus/icons-vue";
 const baseUrl = import.meta.env.VITE_BASE_URL
 const data = reactive({
   user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
@@ -49,6 +53,7 @@ const data = reactive({
   userName: null,
   userList: [],
   categoryList: [],
+  exportLoading: {}, // 导出加载状态
 })
 
 const navTo = (url) => {
@@ -174,6 +179,54 @@ const reset = () => {
   data.categoryName = null
   data.userName = null
   load()
+}
+
+// 导出相册
+const exportAlbum = (row) => {
+  // 设置导出加载状态
+  data.exportLoading[row.categoryId] = true;
+
+  // 创建隐藏的下载链接
+  const link = document.createElement('a');
+  link.style.display = 'none';
+
+  // 构建完整的下载URL，包含token
+  const downloadUrl = request.defaults.baseURL + '/export/album/' + row.categoryId;
+
+  // 使用fetch API发送带token的请求
+  fetch(downloadUrl, {
+    headers: {
+      'token': data.user.token
+    }
+  })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('导出失败');
+        }
+        return response.blob();
+      })
+      .then(blob => {
+        // 创建下载链接
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute('download', `album_${row.categoryId}.zip`);
+        document.body.appendChild(link);
+        link.click();
+
+        // 清理
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(link);
+
+        ElMessage.success('相册导出成功');
+      })
+      .catch(error => {
+        console.error('导出失败:', error);
+        ElMessage.error('导出失败，请稍后重试');
+      })
+      .finally(() => {
+        // 清除加载状态
+        data.exportLoading[row.categoryId] = false;
+      });
 }
 
 load()

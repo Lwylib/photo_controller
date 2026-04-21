@@ -23,13 +23,18 @@
               </div>
               <div style="margin-top: 10px; color: #666666; text-align: justify; height: 60px; line-height: 20px" class="line3">{{ item.description }}</div>
               <div style="margin-top: 5px; color: #666666">创建时间：{{ item.time }}</div>
-              <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 10px">
+              <!-- 第一行：状态标签 -->
+              <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 10px; flex-wrap: wrap;">
                 <el-tag v-if="item.roleRadio === '公开'" size="large" type="success">{{ item.roleRadio }}</el-tag>
                 <el-tag v-else type="danger" size="large">{{ item.roleRadio }}</el-tag>
                 <el-tag v-if="item.statusRadio === '正常'" size="large" type="success">{{ item.statusRadio }}</el-tag>
                 <el-tag v-else type="danger" size="large">{{ item.statusRadio }}</el-tag>
+              </div>
+              
+              <!-- 第二行：热度信息和操作按钮 -->
+              <div style="margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
                 <!-- 热度信息 -->
-                <div style="display: flex; align-items: center; grid-gap: 5px; margin-left: auto">
+                <div style="display: flex; align-items: center; grid-gap: 10px;">
                   <el-tooltip content="浏览量" placement="top">
                     <div style="display: flex; align-items: center; color: #666;">
                       <el-icon><View /></el-icon>
@@ -46,10 +51,20 @@
                     <el-tag type="warning" size="small">{{ item.hotPoint || 0 }}</el-tag>
                   </el-tooltip>
                 </div>
-                <!-- 管理员操作按钮 -->
-                <div v-if="data.user.role === 'ADMIN'" style="margin-left: 10px">
-                  <el-button v-if="item.statusRadio !== '违规'" size="small" type="danger" @click="markAsViolated(item)">标记违规</el-button>
-                  <el-button v-else size="small" type="success" @click="markAsNormal(item)">恢复正常</el-button>
+                
+                <!-- 操作按钮 -->
+                <div style="display: flex; align-items: center; grid-gap: 5px;">
+                  <!-- 导出按钮 -->
+                  <el-button type="primary" size="small" @click="exportAlbum(item)" :loading="data.exportLoading[item.id]">
+                    <el-icon><Download /></el-icon>
+                    导出
+                  </el-button>
+                  
+                  <!-- 管理员操作按钮 -->
+                  <div v-if="data.user.role === 'ADMIN'" style="margin-left: 5px">
+                    <el-button v-if="item.statusRadio !== '违规'" size="small" type="danger" @click="markAsViolated(item)">标记违规</el-button>
+                    <el-button v-else size="small" type="success" @click="markAsNormal(item)">恢复正常</el-button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -69,7 +84,7 @@ import { reactive } from "vue"
 import request from "@/utils/request";
 import {ElMessage, ElMessageBox} from "element-plus";
 import router from "@/router/index.js";
-import {Delete, Edit, View, Star} from "@element-plus/icons-vue";
+import {Delete, Edit, View, Star, Download} from "@element-plus/icons-vue";
 const data = reactive({
   user: JSON.parse(localStorage.getItem('xm-user') || '{}'),
   tableData: [],
@@ -78,6 +93,7 @@ const data = reactive({
   pageSize: 6,  // 每页的个数
   name: null,
   sortType: 'default', // 排序方式：default-默认，hot-热度
+  exportLoading: {}, // 导出加载状态
 })
 
 const navTo = (url) => {
@@ -150,6 +166,54 @@ const markAsNormal = (item) => {
     })
   }).catch(() => {
     // 用户取消操作
+  });
+}
+
+// 导出相册
+const exportAlbum = (item) => {
+  // 设置导出加载状态
+  data.exportLoading[item.id] = true;
+  
+  // 创建隐藏的下载链接
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  
+  // 构建完整的下载URL，包含token
+  const downloadUrl = request.defaults.baseURL + '/export/album/' + item.id;
+  
+  // 使用fetch API发送带token的请求
+  fetch(downloadUrl, {
+    headers: {
+      'token': data.user.token
+    }
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('导出失败');
+    }
+    return response.blob();
+  })
+  .then(blob => {
+    // 创建下载链接
+    const url = window.URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `album_${item.id}.zip`);
+    document.body.appendChild(link);
+    link.click();
+    
+    // 清理
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+    
+    ElMessage.success('相册导出成功');
+  })
+  .catch(error => {
+    console.error('导出失败:', error);
+    ElMessage.error('导出失败，请稍后重试');
+  })
+  .finally(() => {
+    // 清除加载状态
+    data.exportLoading[item.id] = false;
   });
 }
 
