@@ -49,6 +49,26 @@
               <div style="font-size: 18px">{{ item.name }}</div>
               <div style="margin-top: 10px; color: #666666; text-align: justify; height: 100px; line-height: 20px" class="line5">{{ item.description }}</div>
               <div style="margin-top: 5px; color: #666666">创建时间：{{ item.time }}</div>
+              
+              <!-- 热度信息 -->
+              <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 15px; flex-wrap: wrap;">
+                <el-tooltip content="浏览量" placement="top">
+                  <div style="display: flex; align-items: center; color: #666;">
+                    <el-icon><View /></el-icon>
+                    <span style="margin-left: 5px">{{ item.viewCount || 0 }}</span>
+                  </div>
+                </el-tooltip>
+                <el-tooltip content="收藏数" placement="top">
+                  <div style="display: flex; align-items: center; color: #666;">
+                    <el-icon><Star /></el-icon>
+                    <span style="margin-left: 5px">{{ item.collectCount || 0 }}</span>
+                  </div>
+                </el-tooltip>
+                <el-tooltip content="热度值" placement="top">
+                  <el-tag type="warning" size="small">{{ item.hotPoint || 0 }}</el-tag>
+                </el-tooltip>
+              </div>
+              
               <!-- 第一行：状态标签 -->
               <div style="margin-top: 10px; display: flex; align-items: center; grid-gap: 10px; flex-wrap: wrap;">
                 <el-tag v-if="item.roleRadio === '公开'" size="large" type="success">{{ item.roleRadio }}</el-tag>
