@@ -34,4 +34,6 @@ public interface CollectMapper {
     List<Collect> selectAll(Collect collect);
 
     void deleteByUserId(Integer id);
+
+    void deleteByCategoryId(Integer id);
 }

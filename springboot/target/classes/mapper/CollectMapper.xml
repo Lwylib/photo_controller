@@ -37,6 +37,10 @@
         where user_id = #{id}
     </delete>
 
+    <delete id="deleteByCategoryId">
+        delete from collect where category_id = #{id}
+    </delete>
+
     <insert id="insert" parameterType="com.example.entity.Collect" useGeneratedKeys="true" keyProperty="id">
         insert into `collect`
         <trim prefix="(" suffix=")" suffixOverrides=",">

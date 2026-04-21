@@ -5,7 +5,6 @@ import com.example.common.Constants;
 import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
-import com.example.entity.Picture;
 import com.example.entity.User;
 import com.example.exception.CustomException;
 import com.example.mapper.*;
@@ -56,25 +55,11 @@ public class UserService {
      * 删除
      */
     public void deleteById(Integer id) {
-        // 获取用户上传的所有照片，用于删除本地文件
-        List<Picture> userPictures = pictureMapper.selectByUserId(id);
-        
         categoryMapper.deleteByUserId(id);
         pictureMapper.deleteByUserId(id);
         collectMapper.deleteByUserId(id);
         appealMapper.deleteByUserId(id);
         userMapper.deleteById(id);
-        
-        // 删除用户上传的物理文件
-        for (Picture picture : userPictures) {
-            if (picture.getImg() != null && !picture.getImg().isEmpty()) {
-                String fileName = picture.getImg().substring(picture.getImg().lastIndexOf('/') + 1);
-                String filePath = System.getProperty("user.dir") + "/files/" + fileName;
-                if (cn.hutool.core.io.FileUtil.exist(filePath)) {
-                    cn.hutool.core.io.FileUtil.del(filePath);
-                }
-            }
-        }
     }
 
     /**

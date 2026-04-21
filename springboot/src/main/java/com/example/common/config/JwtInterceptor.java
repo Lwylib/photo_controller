@@ -66,7 +66,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             // 用户密码加签验证 token
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(account.getPassword())).build();
             jwtVerifier.verify(token); // 验证token
-            BaseContext.setCurrentId(Long.valueOf(account.getId()));
+            BaseContext.setCurrentId(account.getId());
         } catch (JWTVerificationException e) {
             throw new CustomException(ResultCodeEnum.TOKEN_CHECK_ERROR);
         }

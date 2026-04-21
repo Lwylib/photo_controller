@@ -45,7 +45,7 @@
           <el-sub-menu index="1">
             <template #title>
               <el-icon><Menu /></el-icon>
-              <span>信息管理</span>
+              <span>个人空间</span>
             </template>
             <el-menu-item index="/manager/notice" v-if="data.user.role === 'ADMIN'">系统公告</el-menu-item>
             <!-- 新菜单 -->

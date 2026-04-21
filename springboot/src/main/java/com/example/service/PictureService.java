@@ -1,6 +1,8 @@
 package com.example.service;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
+import com.example.common.BaseContext;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
 import com.example.entity.Picture;
@@ -74,7 +76,15 @@ public class PictureService {
      * 查询所有
      */
     public List<Picture> selectAll(Picture picture) {
-        return pictureMapper.selectAll(picture);
+        List<Picture> pictures = pictureMapper.selectAll(picture);
+        if (ObjectUtil.isNull(pictures)) return null;
+        for(Picture x : pictures) {
+            if(RoleEnum.USER.name().equals(TokenUtils.getCurrentUser().getRole()) && "私有".equals(x.getRoleRadio()) && !x.getUserId().equals(BaseContext.getCurrentId())) {
+                pictures.remove(x);
+            }
+        }
+        return pictures;
+        // return pictureMapper.selectAll(picture);
     }
 
     /**

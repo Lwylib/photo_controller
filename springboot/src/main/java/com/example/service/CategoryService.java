@@ -9,6 +9,7 @@ import com.example.entity.Category;
 import com.example.entity.User;
 import com.example.exception.CustomException;
 import com.example.mapper.CategoryMapper;
+import com.example.mapper.CollectMapper;
 import com.example.mapper.PictureMapper;
 import com.example.utils.TokenUtils;
 import com.github.pagehelper.PageHelper;
@@ -29,6 +30,8 @@ public class CategoryService {
 
     @Resource
     private CategoryMapper categoryMapper;
+    @Resource
+    private CollectMapper collectMapper;
     @Resource
     private UserService userService;
 
@@ -67,6 +70,9 @@ public class CategoryService {
      * 修改
      */
     public void updateById(Category category) {
+        if("私有".equals(category.getRoleRadio())) {
+            collectMapper.deleteByCategoryId(category.getId());
+        }
         categoryMapper.updateById(category);
     }
 
@@ -126,7 +132,7 @@ public class CategoryService {
                 dbCategory.setUserAvatar(user.getAvatar());
             }
         }
-        Collections.shuffle(list);
+        // Collections.shuffle(list);
         return PageInfo.of(list);
     }
 

@@ -1,18 +1,18 @@
 .manager-container {
-    background-color: #f8f8ff;
+    background-color: #f0f2f5;
     min-height: 100vh;
 }
 
 .manager-header {
     height: 60px;
-    background-color: #716aca;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .manager-header-left {
-    background-color: #716aca;
+    background: transparent;
     width: 220px;
     height: 100%;
     padding-left: 10px;
@@ -30,7 +30,8 @@
     font-weight: bold;
     font-size: 20px;
     margin-left: 10px;
-    color: #eee;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
 .manager-header-center {
@@ -39,24 +40,25 @@
 }
 
 .manager-main-left {
-    width: 200px;
-    background-color: #fff;
+    width: 220px;
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
     min-height: calc(100vh - 60px);
-    box-shadow: 0 0 6px rgba(0, 21, 41, .35);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #e8e8e8;
 }
 
 .manager-main-right {
     flex: 1;
     width: 0;
-    background-color: #f8f8ff;
-    padding: 10px;
+    background-color: #f0f2f5;
+    padding: 15px;
 }
 
 
 /* ElementUI */
 .el-menu {
     border: none;
-    background-color: #fff;
+    background: linear-gradient(to bottom, #ffffff, #f8f9fa);
 }
 
 .el-tooltip__trigger {
@@ -64,40 +66,45 @@
 }
 
 /deep/.el-sub-menu__title {
-    color: #666 !important;
+    color: #555 !important;
     height: 50px;
     line-height: 50px;
-    background-color: #fff !important;
+    background: linear-gradient(to right, #f8f9fa, #ffffff) !important;
+    border-left: 3px solid transparent;
 }
 
 .el-sub-menu__title:hover {
-    background-color: #fff; /* 必须加上这个背景色，否则鼠标移入会出现白色 */
-    color: #fff;
+    background: linear-gradient(to right, #e3f2fd, #bbdefb) !important;
+    color: #1976d2 !important;
+    border-left: 3px solid #2196f3;
 }
 
 .el-menu-item {
-    color: #666;
+    color: #555;
     height: 50px;
     line-height: 50px;
-    background-color: #fff !important; /* 必须加上这个背景色，否则鼠标离开会出现白色 */
+    background: linear-gradient(to right, #ffffff, #fafafa) !important;
+    transition: all 0.3s ease;
 }
 
 .el-menu--inline .el-menu-item {
-    background-color: #fff !important;
+    background: linear-gradient(to right, #fafafa, #f5f5f5) !important;
 }
 
 .el-menu-item.is-active {
-    background-color: #e0ddfc !important;
-    color: #716aca;
-    border-left: 3px solid #716aca;
+    background: linear-gradient(to right, #e3f2fd, #bbdefb) !important;
+    color: #1976d2 !important;
+    border-left: 3px solid #2196f3;
 }
 
 .el-menu-item:not(.is-active):hover {
-    color: #fff;
+    background: linear-gradient(to right, #e3f2fd, #bbdefb) !important;
+    color: #1976d2 !important;
+    border-left: 3px solid #90caf9;
 }
 .el-menu-item:hover {
-    background-color: #e0ddfc !important;
-    color: #716aca !important;
+    background: linear-gradient(to right, #e3f2fd, #bbdefb) !important;
+    color: #1976d2 !important;
 }
 
 /deep/.el-breadcrumb__inner {

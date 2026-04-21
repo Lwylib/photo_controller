@@ -17,7 +17,7 @@
             <if test="time != null"> and category.time like concat('%', #{time}, '%')</if>
             <if test="roleRadio != null"> and category.role_radio like concat('%', #{roleRadio}, '%')</if>
         </where>
-        order by id desc
+        order by time desc
     </select>
 
     <select id="selectById" resultType="com.example.entity.Category">

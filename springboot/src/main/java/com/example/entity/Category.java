@@ -22,6 +22,7 @@ public class Category {
     private String roleRadio;
     private String userName;
     private String userAvatar;
+    private Integer hotPoint;
 
     public Integer getId() {
         return id;
@@ -101,5 +102,14 @@ public class Category {
 
     public void setUserAvatar(String userAvatar) {
         this.userAvatar = userAvatar;
+    }
+
+
+    public Integer getHotPoint() {
+        return hotPoint;
+    }
+
+    public void setHotPoint(Integer hotPoint) {
+        this.hotPoint = hotPoint;
     }
 }
