@@ -192,11 +192,37 @@ public class CategoryService {
     public void increaseViewCount(Integer categoryId) {
         Category category = categoryMapper.selectById(categoryId);
         if (category != null) {
-            if (category.getViewCount() == null) {
-                category.setViewCount(1);
-            } else {
-                category.setViewCount(category.getViewCount() + 1);
-            }
+            category.setViewCount(category.getViewCount() + 1);
+            double hotPoint = category.getViewCount() * 0.3 + category.getCollectCount() * 0.7;
+            category.setHotPoint((int) hotPoint);
+            categoryMapper.updateById(category);
+        }
+    }
+
+    /**
+     * 增加相册收藏量
+     */
+    public void increaseCollectCount(Integer categoryId) {
+        Category category = categoryMapper.selectById(categoryId);
+        if (category != null) {
+            category.setCollectCount(category.getCollectCount() + 1);
+            double hotPoint = category.getViewCount() * 0.3 + category.getCollectCount() * 0.7;
+            category.setHotPoint((int) hotPoint);
+
+            categoryMapper.updateById(category);
+        }
+    }
+
+    /**
+     * 减少相册收藏量
+     */
+    public void decreaseCollectCount(Integer categoryId) {
+        Category category = categoryMapper.selectById(categoryId);
+        if (category != null) {
+            category.setCollectCount(category.getCollectCount() - 1);
+            double hotPoint = category.getViewCount() * 0.3 + category.getCollectCount() * 0.7;
+            category.setHotPoint((int) hotPoint);
+
             categoryMapper.updateById(category);
         }
     }

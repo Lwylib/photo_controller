@@ -30,6 +30,7 @@ public class CollectService {
      */
     public void add(Collect collect) {
         collectMapper.insert(collect);
+        categoryService.increaseCollectCount(collect.getCategoryId());
     }
 
     /**
@@ -37,6 +38,9 @@ public class CollectService {
      */
     public void deleteById(Integer id) {
         collectMapper.deleteById(id);
+        Collect collect = collectMapper.selectById(id);
+        categoryService.decreaseCollectCount(collect.getCategoryId());
+
     }
 
     /**
@@ -44,7 +48,7 @@ public class CollectService {
      */
     public void deleteBatch(List<Integer> ids) {
         for (Integer id : ids) {
-            collectMapper.deleteById(id);
+            deleteById(id);
         }
     }
 
