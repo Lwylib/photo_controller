@@ -5,6 +5,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.example.entity.Comment;
 import com.example.entity.User;
 import com.example.mapper.CommentMapper;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
@@ -64,30 +66,64 @@ public class CommentService {
     public List<Comment> getCommentsByCategoryId(Integer categoryId) {
         // 获取顶级评论
         List<Comment> topLevelComments = commentMapper.selectTopLevelByCategoryId(categoryId);
-
+        
         if (topLevelComments.isEmpty()) {
             return topLevelComments;
         }
-
+        
         // 获取顶级评论的ID列表
         List<Integer> topLevelCommentIds = topLevelComments.stream()
                 .map(Comment::getId)
                 .collect(Collectors.toList());
-
+        
         // 批量查询回复
         List<Comment> allReplies = commentMapper.selectRepliesByCategoryId(categoryId);
-
+        
         // 按父评论ID分组
         Map<Integer, List<Comment>> repliesByParentId = allReplies.stream()
                 .collect(Collectors.groupingBy(Comment::getParentId));
-
+        
         // 将回复组装到对应的顶级评论中
         for (Comment topComment : topLevelComments) {
             List<Comment> replies = repliesByParentId.get(topComment.getId());
             topComment.setReplies(replies != null ? replies : new ArrayList<>());
         }
-
+        
         return topLevelComments;
+    }
+
+    /**
+     * 根据相册ID获取评论列表（分页，包含二级评论）
+     */
+    public PageInfo<Comment> getCommentsByCategoryIdPage(Integer categoryId, Integer pageNum, Integer pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        
+        // 获取顶级评论（分页）
+        List<Comment> topLevelComments = commentMapper.selectTopLevelByCategoryId(categoryId);
+        
+        if (topLevelComments.isEmpty()) {
+            return PageInfo.of(topLevelComments);
+        }
+        
+        // 获取顶级评论的ID列表
+        List<Integer> topLevelCommentIds = topLevelComments.stream()
+                .map(Comment::getId)
+                .collect(Collectors.toList());
+        
+        // 批量查询回复
+        List<Comment> allReplies = commentMapper.selectRepliesByCategoryId(categoryId);
+        
+        // 按父评论ID分组
+        Map<Integer, List<Comment>> repliesByParentId = allReplies.stream()
+                .collect(Collectors.groupingBy(Comment::getParentId));
+        
+        // 将回复组装到对应的顶级评论中
+        for (Comment topComment : topLevelComments) {
+            List<Comment> replies = repliesByParentId.get(topComment.getId());
+            topComment.setReplies(replies != null ? replies : new ArrayList<>());
+        }
+        
+        return PageInfo.of(topLevelComments);
     }
 
     /**

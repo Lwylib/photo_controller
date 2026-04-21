@@ -141,7 +141,7 @@ public class CategoryService {
             //     calculateHotPoint(dbCategory);
             // }
         }
-        Collections.shuffle(list);
+        // Collections.shuffle(list);
         return PageInfo.of(list);
     }
 

@@ -49,12 +49,14 @@ public class CommentController {
     }
 
     /**
-     * 根据相册ID获取评论列表
+     * 根据相册ID获取评论列表（分页）
      */
     @GetMapping("/selectByCategoryId/{categoryId}")
-    public Result selectByCategoryId(@PathVariable Integer categoryId) {
-        List<Comment> comments = commentService.getCommentsByCategoryId(categoryId);
-        return Result.success(comments);
+    public Result selectByCategoryId(@PathVariable Integer categoryId, 
+                                    @RequestParam(defaultValue = "1") Integer pageNum,
+                                    @RequestParam(defaultValue = "5") Integer pageSize) {
+        PageInfo<Comment> pageInfo = commentService.getCommentsByCategoryIdPage(categoryId, pageNum, pageSize);
+        return Result.success(pageInfo);
     }
 
     /**
