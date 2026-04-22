@@ -37,10 +37,9 @@ public class CollectService {
      * 删除
      */
     public void deleteById(Integer id) {
-        collectMapper.deleteById(id);
         Collect collect = collectMapper.selectById(id);
         categoryService.decreaseCollectCount(collect.getCategoryId());
-
+        collectMapper.deleteById(id);
     }
 
     /**
