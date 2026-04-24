@@ -16,6 +16,7 @@ import com.example.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * jwt拦截器
  */
 @Component
+@Slf4j
 public class JwtInterceptor implements HandlerInterceptor {
 
 
@@ -67,6 +69,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(account.getPassword())).build();
             jwtVerifier.verify(token); // 验证token
             BaseContext.setCurrentId(account.getId());
+            log.info("当前用户id：{} 用户名：{}", account.getId(), account.getUsername());
         } catch (JWTVerificationException e) {
             throw new CustomException(ResultCodeEnum.TOKEN_CHECK_ERROR);
         }

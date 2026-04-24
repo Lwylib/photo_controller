@@ -3,6 +3,7 @@ package com.example.controller;
 import com.example.service.ExportService;
 import jakarta.annotation.Resource;
 // import org.springframework.core.io.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/export")
+@Slf4j
 public class ExportController {
 
     @Resource
@@ -23,6 +25,9 @@ public class ExportController {
      */
     @GetMapping("/album/{categoryId}")
     public ResponseEntity<org.springframework.core.io.Resource> exportAlbumImages(@PathVariable Integer categoryId) {
-        return exportService.exportAlbumImages(categoryId);
+        log.info("ExportController.exportAlbumImages() - 导出相册图片, 相册ID: {}", categoryId);
+        ResponseEntity<org.springframework.core.io.Resource> response = exportService.exportAlbumImages(categoryId);
+        log.info("ExportController.exportAlbumImages() - 导出相册图片成功, 相册ID: {}", categoryId);
+        return response;
     }
 }

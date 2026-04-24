@@ -4,6 +4,7 @@ import com.example.common.Result;
 import com.example.entity.Category;
 import com.example.service.CategoryService;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import jakarta.annotation.Resource;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/category")
+@Slf4j
 public class CategoryController {
 
     @Resource
@@ -23,7 +25,9 @@ public class CategoryController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody Category category) {
+        log.info("CategoryController.add() - 新增相册, 名称: {}", category.getName());
         categoryService.add(category);
+        log.info("CategoryController.add() - 新增相册成功");
         return Result.success();
     }
 
@@ -32,7 +36,9 @@ public class CategoryController {
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
+        log.info("CategoryController.deleteById() - 删除相册, ID: {}", id);
         categoryService.deleteById(id);
+        log.info("CategoryController.deleteById() - 删除相册成功");
         return Result.success();
     }
 
@@ -41,7 +47,9 @@ public class CategoryController {
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
+        log.info("CategoryController.deleteBatch() - 批量删除相册, ID列表: {}", ids);
         categoryService.deleteBatch(ids);
+        log.info("CategoryController.deleteBatch() - 批量删除相册成功");
         return Result.success();
     }
 
@@ -50,7 +58,9 @@ public class CategoryController {
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Category category) {
+        log.info("CategoryController.updateById() - 更新相册, ID: {}, 名称: {}", category.getId(), category.getName());
         categoryService.updateById(category);
+        log.info("CategoryController.updateById() - 更新相册成功");
         return Result.success();
     }
 
@@ -59,9 +69,11 @@ public class CategoryController {
      */
     @PutMapping("/updateStatus")
     public Result updateStatus(@RequestBody Category category) {
+        log.info("CategoryController.updateStatus() - 更新相册状态, ID: {}, 状态: {}", category.getId(), category.getStatusRadio());
         Category dbCategory = categoryService.selectById(category.getId());
         dbCategory.setStatusRadio(category.getStatusRadio());
         categoryService.updateById(dbCategory);
+        log.info("CategoryController.updateStatus() - 更新相册状态成功");
         return Result.success();
     }
 
@@ -70,7 +82,9 @@ public class CategoryController {
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
+        log.info("CategoryController.selectById() - 查询相册, ID: {}", id);
         Category category = categoryService.selectById(id);
+        log.info("CategoryController.selectById() - 查询相册成功");
         return Result.success(category);
     }
 
@@ -79,7 +93,9 @@ public class CategoryController {
      */
     @GetMapping("/selectAll")
     public Result selectAll(Category category) {
+        log.info("CategoryController.selectAll() - 查询所有相册");
         List<Category> list = categoryService.selectAll(category);
+        log.info("CategoryController.selectAll() - 查询到 {} 个相册", list.size());
         return Result.success(list);
     }
 
@@ -90,7 +106,9 @@ public class CategoryController {
     public Result selectPage(Category category,
                              @RequestParam(defaultValue = "1") Integer pageNum,
                              @RequestParam(defaultValue = "10") Integer pageSize) {
+        log.info("CategoryController.selectPage() - 分页查询相册, 页码: {}, 页大小: {}", pageNum, pageSize);
         PageInfo<Category> page = categoryService.selectPage(category, pageNum, pageSize);
+        log.info("CategoryController.selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
         return Result.success(page);
     }
 

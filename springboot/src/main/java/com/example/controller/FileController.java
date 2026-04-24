@@ -8,6 +8,7 @@ import com.example.common.BaseContext;
 import com.example.common.Constants;
 import com.example.common.Result;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,9 +26,10 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/files")
+@Slf4j
 public class FileController {
 
-    private static final Logger log = LoggerFactory.getLogger(FileController.class);
+    // private static final Logger log = LoggerFactory.getLogger(FileController.class);
 
     private static final String filePath = System.getProperty("user.dir") + "/files/";
 
@@ -52,6 +54,7 @@ public class FileController {
             log.error(fileName + "--文件上传失败", e);
         }
         String url = fileBaseUrl + "/files/download/" + fileName;
+        log.info("文件上传成功");
         return Result.success(url);
     }
 
@@ -71,6 +74,7 @@ public class FileController {
                 os.write(bytes);
                 os.flush();
                 os.close();
+                log.info("获取文件：{}", filePath + fileName);
             }
         } catch (Exception e) {
             log.warn("文件下载失败：" + fileName);
@@ -87,7 +91,7 @@ public class FileController {
         try {
             // 文件存储形式：时间戳-文件名
             FileUtil.writeBytes(file.getBytes(), BaseContext.getCurrentId() + "-" + filePath + flag + "-" + fileName);
-            System.out.println(fileName + "--上传成功");
+            log.info(fileName + "--上传成功");
             Thread.sleep(1L);
         } catch (Exception e) {
             System.err.println(fileName + "--文件上传失败");
