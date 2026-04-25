@@ -23,9 +23,9 @@ public class UserController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody User user) {
-        log.info("UserController.add() - 新增用户, 用户名: {}", user.getUsername());
+        log.info("add() - 新增用户, 用户名: {}", user.getUsername());
         userService.add(user);
-        log.info("UserController.add() - 新增用户成功");
+        log.info("add() - 新增用户成功");
         return Result.success();
     }
 
@@ -34,9 +34,9 @@ public class UserController {
      */
     @DeleteMapping("/delete/{id}")
     public Result delete(@PathVariable Integer id) {
-        log.info("UserController.delete() - 删除用户, ID: {}", id);
+        log.info("delete() - 删除用户, ID: {}", id);
         userService.deleteById(id);
-        log.info("UserController.delete() - 删除用户成功");
+        log.info("delete() - 删除用户成功");
         return Result.success();
     }
 
@@ -45,9 +45,9 @@ public class UserController {
      */
     @DeleteMapping("/delete/batch")
     public Result delete(@RequestBody List<Integer> ids) {
-        log.info("UserController.delete() - 批量删除用户, ID列表: {}", ids);
+        log.info("delete() - 批量删除用户, ID列表: {}", ids);
         userService.deleteBatch(ids);
-        log.info("UserController.delete() - 批量删除用户成功");
+        log.info("delete() - 批量删除用户成功");
         return Result.success();
     }
 
@@ -56,9 +56,9 @@ public class UserController {
      */
     @PutMapping("/update")
     public Result update(@RequestBody User user) {
-        log.info("UserController.update() - 更新用户, ID: {}, 用户名: {}", user.getId(), user.getUsername());
+        log.info("update() - 更新用户, ID: {}, 用户名: {}", user.getId(), user.getUsername());
         userService.updateById(user);
-        log.info("UserController.update() - 更新用户成功");
+        log.info("update() - 更新用户成功");
         return Result.success();
     }
 
@@ -67,9 +67,9 @@ public class UserController {
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
-        log.info("UserController.selectById() - 查询用户, ID: {}", id);
+        log.info("selectById() - 查询用户, ID: {}", id);
         User user = userService.selectById(id);
-        log.info("UserController.selectById() - 查询用户成功");
+        log.info("selectById() - 查询用户成功");
         return Result.success(user);
     }
 
@@ -78,9 +78,9 @@ public class UserController {
      */
     @GetMapping("/selectAll")
     public Result selectAll(User user) {
-        log.info("UserController.selectAll() - 查询所有用户");
+        log.info("selectAll() - 查询所有用户");
         List<User> list = userService.selectAll(user);
-        log.info("UserController.selectAll() - 查询到 {} 个用户", list.size());
+        log.info("selectAll() - 查询到 {} 个用户", list.size());
         return Result.success(list);
     }
 
@@ -92,9 +92,9 @@ public class UserController {
             User user,
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize) {
-        log.info("UserController.selectPage() - 分页查询用户, 页码: {}, 页大小: {}", pageNum, pageSize);
+        log.info("selectPage() - 分页查询用户, 页码: {}, 页大小: {}", pageNum, pageSize);
         PageInfo<User> pageInfo = userService.selectPage(user, pageNum, pageSize);
-        log.info("UserController.selectPage() - 分页查询成功, 总记录数: {}", pageInfo.getTotal());
+        log.info("selectPage() - 分页查询成功, 总记录数: {}", pageInfo.getTotal());
         return Result.success(pageInfo);
     }
 

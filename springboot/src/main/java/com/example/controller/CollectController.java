@@ -27,14 +27,14 @@ public class CollectController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody Collect collect) {
-        log.info("CollectController.add() - 新增收藏, 用户ID: {}, 相册ID: {}", collect.getUserId(), collect.getCategoryId());
+        log.info("add() - 新增收藏, 用户ID: {}, 相册ID: {}", collect.getUserId(), collect.getCategoryId());
         List<Collect> collects = collectService.selectAll(collect);
         if (CollectionUtil.isNotEmpty(collects)) {
-            log.warn("CollectController.add() - 重复收藏, 用户ID: {}, 相册ID: {}", collect.getUserId(), collect.getCategoryId());
+            log.warn("add() - 重复收藏, 用户ID: {}, 相册ID: {}", collect.getUserId(), collect.getCategoryId());
             throw new CustomException("500", "您已经收藏过该相册，请勿重复收藏");
         }
         collectService.add(collect);
-        log.info("CollectController.add() - 新增收藏成功");
+        log.info("add() - 新增收藏成功");
         return Result.success();
     }
 
@@ -43,9 +43,9 @@ public class CollectController {
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
-        log.info("CollectController.deleteById() - 删除收藏, ID: {}", id);
+        log.info("deleteById() - 删除收藏, ID: {}", id);
         collectService.deleteById(id);
-        log.info("CollectController.deleteById() - 删除收藏成功");
+        log.info("deleteById() - 删除收藏成功");
         return Result.success();
     }
 
@@ -54,9 +54,9 @@ public class CollectController {
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
-        log.info("CollectController.deleteBatch() - 批量删除收藏, ID列表: {}", ids);
+        log.info("deleteBatch() - 批量删除收藏, ID列表: {}", ids);
         collectService.deleteBatch(ids);
-        log.info("CollectController.deleteBatch() - 批量删除收藏成功");
+        log.info("deleteBatch() - 批量删除收藏成功");
         return Result.success();
     }
 
@@ -65,9 +65,9 @@ public class CollectController {
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Collect collect) {
-        log.info("CollectController.updateById() - 更新收藏, ID: {}, 用户ID: {}", collect.getId(), collect.getUserId());
+        log.info("updateById() - 更新收藏, ID: {}, 用户ID: {}", collect.getId(), collect.getUserId());
         collectService.updateById(collect);
-        log.info("CollectController.updateById() - 更新收藏成功");
+        log.info("updateById() - 更新收藏成功");
         return Result.success();
     }
 
@@ -76,9 +76,9 @@ public class CollectController {
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
-        log.info("CollectController.selectById() - 查询收藏, ID: {}", id);
+        log.info("selectById() - 查询收藏, ID: {}", id);
         Collect collect = collectService.selectById(id);
-        log.info("CollectController.selectById() - 查询收藏成功");
+        log.info("selectById() - 查询收藏成功");
         return Result.success(collect);
     }
 
@@ -87,9 +87,9 @@ public class CollectController {
      */
     @GetMapping("/selectAll")
     public Result selectAll(Collect collect) {
-        log.info("CollectController.selectAll() - 查询所有收藏");
+        log.info("selectAll() - 查询所有收藏");
         List<Collect> list = collectService.selectAll(collect);
-        log.info("CollectController.selectAll() - 查询到 {} 条收藏记录", list.size());
+        log.info("selectAll() - 查询到 {} 条收藏记录", list.size());
         return Result.success(list);
     }
 
@@ -100,9 +100,9 @@ public class CollectController {
     public Result selectPage(Collect collect,
                              @RequestParam(defaultValue = "1") Integer pageNum,
                              @RequestParam(defaultValue = "10") Integer pageSize) {
-        log.info("CollectController.selectPage() - 分页查询收藏, 页码: {}, 页大小: {}", pageNum, pageSize);
+        log.info("selectPage() - 分页查询收藏, 页码: {}, 页大小: {}", pageNum, pageSize);
         PageInfo<Collect> page = collectService.selectPage(collect, pageNum, pageSize);
-        log.info("CollectController.selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
+        log.info("selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
         return Result.success(page);
     }
 

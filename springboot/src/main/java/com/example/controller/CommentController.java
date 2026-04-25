@@ -32,10 +32,10 @@ public class CommentController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody Comment comment) {
-        log.info("CommentController.add() - 新增评论, 用户ID: {}, 相册ID: {}", BaseContext.getCurrentId(), comment.getCategoryId());
+        log.info("add() - 新增评论, 用户ID: {}, 相册ID: {}", BaseContext.getCurrentId(), comment.getCategoryId());
         comment.setUserId(BaseContext.getCurrentId());
         commentService.add(comment);
-        log.info("CommentController.add() - 新增评论成功");
+        log.info("add() - 新增评论成功");
         return Result.success();
     }
 
@@ -44,14 +44,14 @@ public class CommentController {
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
-        log.info("CommentController.deleteById() - 删除评论, ID: {}, 用户ID: {}", id, BaseContext.getCurrentId());
+        log.info("deleteById() - 删除评论, ID: {}, 用户ID: {}", id, BaseContext.getCurrentId());
         // 验证权限：只有评论创建者可以删除
         if (!commentService.hasPermission(id, BaseContext.getCurrentId())) {
-            log.warn("CommentController.deleteById() - 无权限删除评论, ID: {}", id);
+            log.warn("deleteById() - 无权限删除评论, ID: {}", id);
             return Result.error("无权限删除该评论");
         }
         commentService.deleteById(id);
-        log.info("CommentController.deleteById() - 删除评论成功");
+        log.info("deleteById() - 删除评论成功");
         return Result.success();
     }
 
@@ -62,9 +62,9 @@ public class CommentController {
     public Result selectByCategoryId(@PathVariable Integer categoryId, 
                                     @RequestParam(defaultValue = "1") Integer pageNum,
                                     @RequestParam(defaultValue = "5") Integer pageSize) {
-        log.info("CommentController.selectByCategoryId() - 查询相册评论, 相册ID: {}, 页码: {}, 页大小: {}", categoryId, pageNum, pageSize);
+        log.info("selectByCategoryId() - 查询相册评论, 相册ID: {}, 页码: {}, 页大小: {}", categoryId, pageNum, pageSize);
         PageInfo<Comment> pageInfo = commentService.getCommentsByCategoryIdPage(categoryId, pageNum, pageSize);
-        log.info("CommentController.selectByCategoryId() - 查询成功, 总评论数: {}", pageInfo.getTotal());
+        log.info("selectByCategoryId() - 查询成功, 总评论数: {}", pageInfo.getTotal());
         return Result.success(pageInfo);
     }
 
@@ -73,13 +73,13 @@ public class CommentController {
      */
     @PostMapping("/like/{commentId}")
     public Result likeComment(@PathVariable Integer commentId) {
-        log.info("CommentController.likeComment() - 点赞评论, 评论ID: {}, 用户ID: {}", commentId, BaseContext.getCurrentId());
+        log.info("likeComment() - 点赞评论, 评论ID: {}, 用户ID: {}", commentId, BaseContext.getCurrentId());
         boolean success = commentLikeService.likeComment(commentId, BaseContext.getCurrentId());
         if (success) {
-            log.info("CommentController.likeComment() - 点赞成功");
+            log.info("likeComment() - 点赞成功");
             return Result.success("点赞成功");
         } else {
-            log.info("CommentController.likeComment() - 已经点赞过了");
+            log.info("likeComment() - 已经点赞过了");
             return Result.error("已经点赞过了");
         }
     }
@@ -89,13 +89,13 @@ public class CommentController {
      */
     @PostMapping("/unlike/{commentId}")
     public Result unlikeComment(@PathVariable Integer commentId) {
-        log.info("CommentController.unlikeComment() - 取消点赞, 评论ID: {}, 用户ID: {}", commentId, BaseContext.getCurrentId());
+        log.info("unlikeComment() - 取消点赞, 评论ID: {}, 用户ID: {}", commentId, BaseContext.getCurrentId());
         boolean success = commentLikeService.unlikeComment(commentId, BaseContext.getCurrentId());
         if (success) {
-            log.info("CommentController.unlikeComment() - 取消点赞成功");
+            log.info("unlikeComment() - 取消点赞成功");
             return Result.success("取消点赞成功");
         } else {
-            log.info("CommentController.unlikeComment() - 尚未点赞");
+            log.info("unlikeComment() - 尚未点赞");
             return Result.error("尚未点赞");
         }
     }
@@ -105,9 +105,9 @@ public class CommentController {
      */
     @GetMapping("/isLiked/{commentId}")
     public Result isLiked(@PathVariable Integer commentId) {
-        log.info("CommentController.isLiked() - 检查点赞状态, 评论ID: {}, 用户ID: {}", commentId, BaseContext.getCurrentId());
+        log.info("isLiked() - 检查点赞状态, 评论ID: {}, 用户ID: {}", commentId, BaseContext.getCurrentId());
         boolean isLiked = commentLikeService.isLiked(commentId, BaseContext.getCurrentId());
-        log.info("CommentController.isLiked() - 点赞状态: {}", isLiked);
+        log.info("isLiked() - 点赞状态: {}", isLiked);
         return Result.success(isLiked);
     }
 

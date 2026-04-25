@@ -29,7 +29,7 @@ import java.util.Map;
 @Slf4j
 public class FileController {
 
-    // private static final Logger log = LoggerFactory.getLogger(FileController.class);
+    // private static final Logger log = LoggerFactory.getLogger(class);
 
     private static final String filePath = System.getProperty("user.dir") + "/files/";
 

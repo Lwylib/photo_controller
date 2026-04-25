@@ -23,7 +23,7 @@ public class WebController {
      */
     @GetMapping("/")
     public Result hello() {
-        log.info("WebController.hello() - 默认请求接口");
+        log.info("hello() - 默认请求接口");
         return Result.success();
     }
 
@@ -32,7 +32,7 @@ public class WebController {
      */
     @PostMapping("/login")
     public Result login(@RequestBody Account account) {
-        log.info("WebController.login() - 用户登录, 账号: {}, 角色: {}", account.getUsername(), account.getRole());
+        log.info("login() - 用户登录, 账号: {}, 角色: {}", account.getUsername(), account.getRole());
         Account loginAccount = null;
         if (RoleEnum.ADMIN.name().equals(account.getRole())) {
             loginAccount = adminService.login(account);
@@ -40,7 +40,7 @@ public class WebController {
         if (RoleEnum.USER.name().equals(account.getRole())) {
             loginAccount = userService.login(account);
         }
-        log.info("WebController.login() - 登录结果: {}", loginAccount != null ? "成功" : "失败");
+        log.info("login() - 登录结果: {}", loginAccount != null ? "成功" : "失败");
         return Result.success(loginAccount);
     }
 
@@ -49,9 +49,9 @@ public class WebController {
      */
     @PostMapping("/register")
     public Result register(@RequestBody Account account) {
-        log.info("WebController.register() - 用户注册, 账号: {}, 角色: {}", account.getUsername(), account.getRole());
+        log.info("register() - 用户注册, 账号: {}, 角色: {}", account.getUsername(), account.getRole());
         userService.register(account);
-        log.info("WebController.register() - 注册成功");
+        log.info("register() - 注册成功");
         return Result.success();
     }
 

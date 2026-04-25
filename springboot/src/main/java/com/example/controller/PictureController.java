@@ -36,9 +36,9 @@ public class PictureController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody Picture picture) {
-        log.info("PictureController.add() - 新增照片, 标题: {}", picture.getDescription());
+        log.info("add() - 新增照片, 标题: {}", picture.getDescription());
         pictureService.add(picture);
-        log.info("PictureController.add() - 新增照片成功");
+        log.info("add() - 新增照片成功");
         return Result.success();
     }
 
@@ -47,9 +47,9 @@ public class PictureController {
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
-        log.info("PictureController.deleteById() - 删除照片, ID: {}", id);
+        log.info("deleteById() - 删除照片, ID: {}", id);
         pictureService.deleteById(id);
-        log.info("PictureController.deleteById() - 删除照片成功");
+        log.info("deleteById() - 删除照片成功");
         return Result.success();
     }
 
@@ -58,9 +58,9 @@ public class PictureController {
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
-        log.info("PictureController.deleteBatch() - 批量删除照片, ID列表: {}", ids);
+        log.info("deleteBatch() - 批量删除照片, ID列表: {}", ids);
         pictureService.deleteBatch(ids);
-        log.info("PictureController.deleteBatch() - 批量删除照片成功");
+        log.info("deleteBatch() - 批量删除照片成功");
         return Result.success();
     }
 
@@ -69,9 +69,9 @@ public class PictureController {
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Picture picture) {
-        log.info("PictureController.updateById() - 更新照片, ID: {}, 标题: {}", picture.getId(), picture.getDescription());
+        log.info("updateById() - 更新照片, ID: {}, 标题: {}", picture.getId(), picture.getDescription());
         pictureService.updateById(picture);
-        log.info("PictureController.updateById() - 更新照片成功");
+        log.info("updateById() - 更新照片成功");
         return Result.success();
     }
 
@@ -80,9 +80,9 @@ public class PictureController {
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
-        log.info("PictureController.selectById() - 查询照片, ID: {}", id);
+        log.info("selectById() - 查询照片, ID: {}", id);
         Picture picture = pictureService.selectById(id);
-        log.info("PictureController.selectById() - 查询照片成功");
+        log.info("selectById() - 查询照片成功");
         return Result.success(picture);
     }
 
@@ -91,9 +91,9 @@ public class PictureController {
      */
     @GetMapping("/selectAll")
     public Result selectAll(Picture picture) {
-        log.info("PictureController.selectAll() - 查询所有照片");
+        log.info("selectAll() - 查询所有照片");
         List<Picture> list = pictureService.selectAll(picture);
-        log.info("PictureController.selectAll() - 查询到 {} 张照片", list.size());
+        log.info("selectAll() - 查询到 {} 张照片", list.size());
         return Result.success(list);
     }
 
@@ -104,9 +104,9 @@ public class PictureController {
     public Result selectPage(Picture picture,
                              @RequestParam(defaultValue = "1") Integer pageNum,
                              @RequestParam(defaultValue = "10") Integer pageSize) {
-        log.info("PictureController.selectPage() - 分页查询照片, 页码: {}, 页大小: {}", pageNum, pageSize);
+        log.info("selectPage() - 分页查询照片, 页码: {}, 页大小: {}", pageNum, pageSize);
         PageInfo<Picture> page = pictureService.selectPage(picture, pageNum, pageSize);
-        log.info("PictureController.selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
+        log.info("selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
         return Result.success(page);
     }
 

@@ -25,9 +25,9 @@ public class ExportController {
      */
     @GetMapping("/album/{categoryId}")
     public ResponseEntity<org.springframework.core.io.Resource> exportAlbumImages(@PathVariable Integer categoryId) {
-        log.info("ExportController.exportAlbumImages() - 导出相册图片, 相册ID: {}", categoryId);
+        log.info("exportAlbumImages() - 导出相册图片, 相册ID: {}", categoryId);
         ResponseEntity<org.springframework.core.io.Resource> response = exportService.exportAlbumImages(categoryId);
-        log.info("ExportController.exportAlbumImages() - 导出相册图片成功, 相册ID: {}", categoryId);
+        log.info("exportAlbumImages() - 导出相册图片成功, 相册ID: {}", categoryId);
         return response;
     }
 }

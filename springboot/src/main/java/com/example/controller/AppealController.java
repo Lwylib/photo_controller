@@ -25,9 +25,9 @@ public class AppealController {
      */
     @PostMapping("/add")
     public Result add(@RequestBody Appeal appeal) {
-        log.info("AppealController.add() - 新增申诉, 申诉人: {}", appeal.getUserName());
+        log.info("add() - 新增申诉, 申诉人: {}", appeal.getUserName());
         appealService.add(appeal);
-        log.info("AppealController.add() - 新增申诉成功");
+        log.info("add() - 新增申诉成功");
         return Result.success();
     }
 
@@ -36,9 +36,9 @@ public class AppealController {
      */
     @DeleteMapping("/delete/{id}")
     public Result deleteById(@PathVariable Integer id) {
-        log.info("AppealController.deleteById() - 删除申诉, ID: {}", id);
+        log.info("deleteById() - 删除申诉, ID: {}", id);
         appealService.deleteById(id);
-        log.info("AppealController.deleteById() - 删除申诉成功");
+        log.info("deleteById() - 删除申诉成功");
         return Result.success();
     }
 
@@ -47,9 +47,9 @@ public class AppealController {
      */
     @DeleteMapping("/delete/batch")
     public Result deleteBatch(@RequestBody List<Integer> ids) {
-        log.info("AppealController.deleteBatch() - 批量删除申诉, ID列表: {}", ids);
+        log.info("deleteBatch() - 批量删除申诉, ID列表: {}", ids);
         appealService.deleteBatch(ids);
-        log.info("AppealController.deleteBatch() - 批量删除申诉成功");
+        log.info("deleteBatch() - 批量删除申诉成功");
         return Result.success();
     }
 
@@ -58,9 +58,9 @@ public class AppealController {
      */
     @PutMapping("/update")
     public Result updateById(@RequestBody Appeal appeal) {
-        log.info("AppealController.updateById() - 更新申诉, ID: {}, 申诉人: {}", appeal.getId(), appeal.getUserName());
+        log.info("updateById() - 更新申诉, ID: {}, 申诉人: {}", appeal.getId(), appeal.getUserName());
         appealService.updateById(appeal);
-        log.info("AppealController.updateById() - 更新申诉成功");
+        log.info("updateById() - 更新申诉成功");
         return Result.success();
     }
 
@@ -69,9 +69,9 @@ public class AppealController {
      */
     @GetMapping("/selectById/{id}")
     public Result selectById(@PathVariable Integer id) {
-        log.info("AppealController.selectById() - 查询申诉, ID: {}", id);
+        log.info("selectById() - 查询申诉, ID: {}", id);
         Appeal appeal = appealService.selectById(id);
-        log.info("AppealController.selectById() - 查询申诉成功");
+        log.info("selectById() - 查询申诉成功");
         return Result.success(appeal);
     }
 
@@ -80,9 +80,9 @@ public class AppealController {
      */
     @GetMapping("/selectAll")
     public Result selectAll(Appeal appeal) {
-        log.info("AppealController.selectAll() - 查询所有申诉");
+        log.info("selectAll() - 查询所有申诉");
         List<Appeal> list = appealService.selectAll(appeal);
-        log.info("AppealController.selectAll() - 查询到 {} 条申诉", list.size());
+        log.info("selectAll() - 查询到 {} 条申诉", list.size());
         return Result.success(list);
     }
 
@@ -93,9 +93,9 @@ public class AppealController {
     public Result selectPage(Appeal appeal,
                              @RequestParam(defaultValue = "1") Integer pageNum,
                              @RequestParam(defaultValue = "10") Integer pageSize) {
-        log.info("AppealController.selectPage() - 分页查询申诉, 页码: {}, 页大小: {}", pageNum, pageSize);
+        log.info("selectPage() - 分页查询申诉, 页码: {}, 页大小: {}", pageNum, pageSize);
         PageInfo<Appeal> page = appealService.selectPage(appeal, pageNum, pageSize);
-        log.info("AppealController.selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
+        log.info("selectPage() - 分页查询成功, 总记录数: {}", page.getTotal());
         return Result.success(page);
     }
 
