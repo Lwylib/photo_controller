@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ai.mapper.AiChatMapper">
+
+    <insert id="insertConversation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ai_conversation (title, user_id, model, status, create_time, update_time)
+        VALUES (#{title}, #{userId}, #{model}, 1, NOW(), NOW())
+    </insert>
+
+    <update id="updateConversationTitle">
+        UPDATE ai_conversation SET title = #{title}, update_time = NOW()
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <update id="deleteConversation">
+        UPDATE ai_conversation SET status = 0, update_time = NOW()
+        WHERE id = #{id} AND user_id = #{userId}
+    </update>
+
+    <select id="selectConversationsByUserId" resultType="com.example.ai.domain.AiConversation">
+        SELECT id, title, user_id as userId, model, status, create_time as createTime, update_time as updateTime
+        FROM ai_conversation WHERE user_id = #{userId} AND status = 1
+        ORDER BY update_time DESC LIMIT 50
+    </select>
+
+    <select id="selectConversationById" resultType="com.example.ai.domain.AiConversation">
+        SELECT id, title, user_id as userId, model, status, create_time as createTime, update_time as updateTime
+        FROM ai_conversation WHERE id = #{param1} AND user_id = #{param2} AND status = 1
+    </select>
+
+    <insert id="insertMessage" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO ai_message (conversation_id, role, content, tokens, create_time)
+        VALUES (#{conversationId}, #{role}, #{content}, #{tokens}, NOW())
+    </insert>
+
+    <select id="selectMessagesByConversationId" resultType="com.example.ai.domain.AiMessage">
+        SELECT id, conversation_id as conversationId, role, content, tokens, create_time as createTime
+        FROM ai_message WHERE conversation_id = #{conversationId}
+        ORDER BY id ASC LIMIT 100
+    </select>
+
+    <delete id="deleteMessagesByConversationId">
+        DELETE FROM ai_message WHERE conversation_id = #{conversationId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.ai.mapper.GenPictureWorkflowPathMapper">
+
+    <select id="selectById" resultType="com.example.ai.domain.GenPictureWorkflowPath">
+        SELECT id, json_path as jsonPath, workflow_name as workflowName, workflow_type as workflowType, create_time as createTime
+        FROM gen_picture_workflow_path WHERE id = #{id}
+    </select>
+
+    <select id="selectByType" resultType="com.example.ai.domain.GenPictureWorkflowPath">
+        SELECT id, json_path as jsonPath, workflow_name as workflowName, workflow_type as workflowType, create_time as createTime
+        FROM gen_picture_workflow_path WHERE workflow_type = #{workflowType}
+    </select>
+
+    <select id="selectAll" resultType="com.example.ai.domain.GenPictureWorkflowPath">
+        SELECT id, json_path as jsonPath, workflow_name as workflowName, workflow_type as workflowType, create_time as createTime
+        FROM gen_picture_workflow_path ORDER BY id
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gen_picture_workflow_path (json_path, workflow_name, workflow_type, create_time)
+        VALUES (#{jsonPath}, #{workflowName}, #{workflowType}, NOW())
+    </insert>
+
+    <update id="updateJsonPath">
+        UPDATE gen_picture_workflow_path SET json_path = #{jsonPath} WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM gen_picture_workflow_path WHERE id = #{id}
+    </delete>
+
+</mapper>

@@ -33,7 +33,7 @@
       <div class="manager-main-left">
         <el-menu
             :default-active="router.currentRoute.value.path"
-            :default-openeds="['1', '2']"
+            :default-openeds="['1', '2', '3']"
             router
         >
           <el-menu-item index="/manager/home">
@@ -64,6 +64,16 @@
             </template>
             <el-menu-item index="/manager/admin">管理员信息</el-menu-item>
             <el-menu-item index="/manager/user">用户信息</el-menu-item>
+          </el-sub-menu>
+          <el-sub-menu index="3">
+            <template #title>
+              <el-icon><Cpu /></el-icon>
+              <span>AI创作</span>
+            </template>
+            <el-menu-item index="/manager/ai-chat">AI对话</el-menu-item>
+            <el-menu-item index="/manager/ai-gen-picture">AI生图</el-menu-item>
+            <el-menu-item index="/manager/ai-gen-picture-history">生图历史</el-menu-item>
+            <el-menu-item index="/manager/ai-gen-picture-comfyui">ComfyUI节点编辑</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </div>

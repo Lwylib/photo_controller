@@ -23,6 +23,11 @@ const router = createRouter({
         { path: 'appeal', meta: { name: '申诉信息' }, component: () => import('@/views/manager/Appeal.vue')},
         { path: 'category', meta: { name: '相册信息' }, component: () => import('@/views/manager/Category.vue')},
         { path: 'albums', meta: { name: '相册广场' }, component: () => import('@/views/manager/Albums.vue')},
+        // AI创作
+        { path: 'ai-chat', meta: { name: 'AI对话' }, component: () => import('@/views/manager/ai/Chat.vue')},
+        { path: 'ai-gen-picture', meta: { name: 'AI生图' }, component: () => import('@/views/manager/ai/GenPicture.vue')},
+        { path: 'ai-gen-picture-history', meta: { name: '生图历史' }, component: () => import('@/views/manager/ai/GenPictureHistory.vue')},
+        { path: 'ai-gen-picture-comfyui', meta: { name: 'ComfyUI节点编辑' }, component: () => import('@/views/manager/ai/GenPictureComfyUI.vue')},
       ]
     },
     {
