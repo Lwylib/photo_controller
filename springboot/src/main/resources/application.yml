@@ -34,7 +34,7 @@ comfyui:
 ai:
   model:
     provider: deepseek
-    api-key: sk-b35b78daa4f14828b50c3b58e85aba73
+    api-key: api-key
     model-name: deepseek-v4-flash
     base-url: http://localhost:11434
     max-tokens: 2048
