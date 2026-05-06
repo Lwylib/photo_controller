@@ -1,15 +1,15 @@
 {
   "1": {
     "inputs": {
-      "text": "masterpiece,best quality,ultra high res,hyper-detailed,anime realism,8K,newest,1girl,solo,long hair,breasts,looking at viewer,shirt,holding,hair between eyes,cleavage,jewelry,bare shoulders,purple eyes,white shirt,upper body,braid, flower,outdoors,earrings,parted lips,R18,NSFW，",
+      "text": "1girl, hatsune miku, dress, long hair, jewelry, white dress, blue eyes, necklace, bubble, solo, underwater, hair between eyes, looking at viewer, bangs, blue hair, bow, reaching towards viewer, blue theme, air bubble, hair bow, collarbone, floating hair, frills, twintails, blurry foreground, frilled dress, off-shoulder dress, bare shoulders, blurry, very long hair\n,masterpiece,best quality,amazing quality,748cmstyle,watercolor,s1_dram,",
       "clip": [
-        "12",
+        "13",
         1
       ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "CLIP文本编码"
+      "title": "正面提示词"
     }
   },
   "2": {
@@ -42,7 +42,7 @@
   },
   "4": {
     "inputs": {
-      "filename_prefix": "ruoyi",
+      "filename_prefix": "img2img",
       "images": [
         "3",
         0
@@ -73,12 +73,12 @@
     "inputs": {
       "seed": 448806014479256,
       "steps": 40,
-      "cfg": 8,
+      "cfg": 7,
       "sampler_name": "euler_ancestral",
-      "scheduler": "kl_optimal",
+      "scheduler": "normal",
       "denoise": 0.7,
       "model": [
-        "12",
+        "13",
         0
       ],
       "positive": [
@@ -110,24 +110,79 @@
   },
   "10": {
     "inputs": {
-      "text": "low quality, worst quality, normal quality, lowres, pixelated, blurry, bad anatomy, bad hands, bad feet, missing fingers, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, ugly, bad proportions, extra limbs, malformed limbs, fused fingers, too many fingers, long neck, cross-eyed, mutated, bad body, unnatural body, long body, duplicate, morbid, mutilated, out of frame, disfigured, gross proportions, missing arms, missing legs, extra arms, extra legs, cloned face, username, watermark, signature, text",
+      "text": "embedding:lazyneg, ",
       "clip": [
-        "12",
+        "13",
         1
       ]
     },
     "class_type": "CLIPTextEncode",
     "_meta": {
-      "title": "CLIP文本编码"
+      "title": "负面提示词"
     }
   },
   "12": {
     "inputs": {
-      "ckpt_name": "illusionRNSFW_v14.safetensors"
+      "ckpt_name": "waiIllustriousSDXL_v170.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
       "title": "Checkpoint加载器（简易）"
+    }
+  },
+  "13": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "superLoras\\748cmSDXL.safetensors",
+        "strength": 0.3
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "superLoras\\ILwatercolor.safetensors",
+        "strength": 0.3
+      },
+      "lora_3": {
+        "on": true,
+        "lora": "superLoras\\S1 Dramatic Lighting Illustrious_V2.safetensors",
+        "strength": 0.5
+      },
+      "lora_4": {
+        "on": true,
+        "lora": "Illustrious_Style_Pack\\通用_PHM_style_IL_v3.3.safetensors",
+        "strength": 0.5
+      },
+      "lora_5": {
+        "on": false,
+        "lora": "superLoras\\Semi-realism_illustrious.safetensors",
+        "strength": 1
+      },
+      "lora_6": {
+        "on": false,
+        "lora": "superLoras\\薄涂USNR_STYLE_ILL_V1_lokr3-000024.safetensors",
+        "strength": 0.8
+      },
+      "lora_7": {
+        "on": true,
+        "lora": "superLoras\\illustriousXLv01_stabilizer_v1.198.safetensors",
+        "strength": 0.5
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "12",
+        0
+      ],
+      "clip": [
+        "12",
+        1
+      ]
+    },
+    "class_type": "Power Lora Loader (rgthree)",
+    "_meta": {
+      "title": "Power Lora Loader (rgthree)"
     }
   }
 }

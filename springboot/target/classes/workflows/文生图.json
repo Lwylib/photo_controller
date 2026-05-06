@@ -1,51 +1,5 @@
 {
-  "1": {
-    "inputs": {
-      "seed": 26838867579330,
-      "steps": 40,
-      "cfg": 8,
-      "sampler_name": "euler_ancestral",
-      "scheduler": "normal",
-      "denoise": 1,
-      "model": [
-        "7",
-        0
-      ],
-      "positive": [
-        "9",
-        0
-      ],
-      "negative": [
-        "10",
-        0
-      ],
-      "latent_image": [
-        "8",
-        0
-      ]
-    },
-    "class_type": "KSampler",
-    "_meta": {
-      "title": "K采样器"
-    }
-  },
-  "3": {
-    "inputs": {
-      "samples": [
-        "1",
-        0
-      ],
-      "vae": [
-        "7",
-        2
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "VAE解码"
-    }
-  },
-  "4": {
+  "2": {
     "inputs": {
       "anything": [
         "3",
@@ -57,11 +11,79 @@
       "title": "清理显存占用"
     }
   },
-  "5": {
+  "3": {
     "inputs": {
-      "filename_prefix": "ruoyi",
-      "images": [
+      "samples": [
+        "7",
+        0
+      ],
+      "vae": [
         "4",
+        2
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE解码"
+    }
+  },
+  "4": {
+    "inputs": {
+      "ckpt_name": "waiIllustriousSDXL_v170.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple",
+    "_meta": {
+      "title": "Checkpoint加载器（简易）"
+    }
+  },
+  "6": {
+    "inputs": {
+      "text": "embedding:lazyneg, ",
+      "clip": [
+        "12",
+        1
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "负面提示词"
+    }
+  },
+  "7": {
+    "inputs": {
+      "seed": 581436701662071,
+      "steps": 30,
+      "cfg": 7,
+      "sampler_name": "euler_ancestral",
+      "scheduler": "normal",
+      "denoise": 0.7,
+      "model": [
+        "12",
+        0
+      ],
+      "positive": [
+        "9",
+        0
+      ],
+      "negative": [
+        "6",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "K采样器"
+    }
+  },
+  "8": {
+    "inputs": {
+      "filename_prefix": "text2img",
+      "images": [
+        "2",
         0
       ]
     },
@@ -70,31 +92,11 @@
       "title": "保存图像"
     }
   },
-  "7": {
-    "inputs": {
-      "ckpt_name": "illusionRNSFW_v14.safetensors"
-    },
-    "class_type": "CheckpointLoaderSimple",
-    "_meta": {
-      "title": "Checkpoint加载器（简易）"
-    }
-  },
-  "8": {
-    "inputs": {
-      "width": 512,
-      "height": 512,
-      "batch_size": 1
-    },
-    "class_type": "EmptyLatentImage",
-    "_meta": {
-      "title": "空Latent图像"
-    }
-  },
   "9": {
     "inputs": {
-      "text": "masterpiece,best quality,ultra high res,hyper-detailed,anime realism,8K,newest,1girl,solo,long hair,breasts,looking at viewer,shirt,holding,hair between eyes,cleavage,jewelry,bare shoulders,purple eyes,white shirt,upper body,braid, flower,outdoors,earrings,parted lips,",
+      "text": "1girl, hatsune miku, dress, long hair, jewelry, white dress, blue eyes, necklace, bubble, solo, underwater, hair between eyes, looking at viewer, bangs, blue hair, bow, reaching towards viewer, blue theme, air bubble, hair bow, collarbone, floating hair, frills, twintails, blurry foreground, frilled dress, off-shoulder dress, bare shoulders, blurry, very long hair\n,masterpiece,best quality,amazing quality,748cmstyle,watercolor,s1_dram,",
       "clip": [
-        "7",
+        "12",
         1
       ]
     },
@@ -105,15 +107,68 @@
   },
   "10": {
     "inputs": {
-      "text": "low quality, worst quality, normal quality, lowres, pixelated, blurry, bad anatomy, bad hands, bad feet, missing fingers, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, ugly, bad proportions, extra limbs, malformed limbs, fused fingers, too many fingers, long neck, cross-eyed, mutated, bad body, unnatural body, long body, duplicate, morbid, mutilated, out of frame, disfigured, gross proportions, missing arms, missing legs, extra arms, extra legs, cloned face, username, watermark, signature, text",
+      "width": 1024,
+      "height": 1504,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "空Latent图像"
+    }
+  },
+  "12": {
+    "inputs": {
+      "PowerLoraLoaderHeaderWidget": {
+        "type": "PowerLoraLoaderHeaderWidget"
+      },
+      "lora_1": {
+        "on": true,
+        "lora": "superLoras\\748cmSDXL.safetensors",
+        "strength": 0.3
+      },
+      "lora_2": {
+        "on": true,
+        "lora": "superLoras\\ILwatercolor.safetensors",
+        "strength": 0.3
+      },
+      "lora_3": {
+        "on": true,
+        "lora": "superLoras\\S1 Dramatic Lighting Illustrious_V2.safetensors",
+        "strength": 0.5
+      },
+      "lora_4": {
+        "on": true,
+        "lora": "Illustrious_Style_Pack\\通用_PHM_style_IL_v3.3.safetensors",
+        "strength": 0.5
+      },
+      "lora_5": {
+        "on": false,
+        "lora": "superLoras\\Semi-realism_illustrious.safetensors",
+        "strength": 1
+      },
+      "lora_6": {
+        "on": false,
+        "lora": "superLoras\\薄涂USNR_STYLE_ILL_V1_lokr3-000024.safetensors",
+        "strength": 0.8
+      },
+      "lora_7": {
+        "on": true,
+        "lora": "superLoras\\illustriousXLv01_stabilizer_v1.198.safetensors",
+        "strength": 0.5
+      },
+      "➕ Add Lora": "",
+      "model": [
+        "4",
+        0
+      ],
       "clip": [
-        "7",
+        "4",
         1
       ]
     },
-    "class_type": "CLIPTextEncode",
+    "class_type": "Power Lora Loader (rgthree)",
     "_meta": {
-      "title": "负面提示词"
+      "title": "Power Lora Loader (rgthree)"
     }
   }
 }

@@ -28,6 +28,7 @@ const router = createRouter({
         { path: 'ai-gen-picture', meta: { name: 'AI生图' }, component: () => import('@/views/manager/ai/GenPicture.vue')},
         { path: 'ai-gen-picture-history', meta: { name: '生图历史' }, component: () => import('@/views/manager/ai/GenPictureHistory.vue')},
         { path: 'ai-gen-picture-comfyui', meta: { name: 'ComfyUI节点编辑' }, component: () => import('@/views/manager/ai/GenPictureComfyUI.vue')},
+        { path: 'air-condition', meta: { name: '便携小空调' }, component: () => import('@/views/manager/funny-things/AirCondition.vue')},
       ]
     },
     {

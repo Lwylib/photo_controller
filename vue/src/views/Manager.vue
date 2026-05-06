@@ -75,6 +75,9 @@
             <el-menu-item index="/manager/ai-gen-picture-history">生图历史</el-menu-item>
             <el-menu-item index="/manager/ai-gen-picture-comfyui">ComfyUI节点编辑</el-menu-item>
           </el-sub-menu>
+          <el-menu-item index="/manager/air-condition">
+            <el-icon><Sunny /></el-icon><span>便携小空调</span>
+          </el-menu-item>
         </el-menu>
       </div>
 

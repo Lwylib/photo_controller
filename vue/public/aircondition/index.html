@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>便携小空调</title>
+<style>
+/* ===== Font ===== */
+@font-face {
+  font-family: "Digital-7 Mono";
+  src: url("assets/fonts/digital-7-mono.ttf") format("truetype");
+}
+
+/* ===== CSS Variables ===== */
+:root {
+  --ac-bg-color: #f5f5f5;
+  --ac-text-color: #141414;
+  --ac-unit-bg: #ffffff;
+  --ac-border: #e0e0e0;
+  --ac-display: #cccccc;
+  --ac-wind: #bbbbbb;
+  --ac-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
+}
+
+html.dark {
+  --ac-bg-color: #121212;
+  --ac-text-color: #fafafa;
+  --ac-unit-bg: #1e1e1e;
+  --ac-border: #444444;
+  --ac-display: #888888;
+  --ac-wind: #666666;
+  --ac-shadow: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
+}
+
+/* ===== Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--ac-bg-color);
+  color: var(--ac-text-color);
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  padding-top: 24px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 1.875rem;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+/* ===== Dark Mode Toggle ===== */
+.dark-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  background: var(--ac-unit-bg);
+  border: 1px solid var(--ac-border);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--ac-shadow);
+  transition: transform 0.2s;
+  z-index: 100;
+  color: var(--ac-text-color);
+}
+.dark-toggle:hover { transform: scale(1.1); }
+.dark-toggle:active { transform: scale(0.95); }
+
+/* ===== AC Unit ===== */
+.ac-unit {
+  position: relative;
+  background: var(--ac-unit-bg);
+  height: 152px;
+  border: 1px solid var(--ac-border);
+  border-radius: 10px 10px 20px 20px;
+  box-shadow: var(--ac-shadow);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Status LED */
+.ac-led {
+  position: absolute;
+  top: 128px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ac-border);
+  transition: background-color 0.3s;
+}
+.ac-led.on { background-color: #38F709; }
+
+/* Air outlet */
+.ac-outlet {
+  margin-top: 4px;
+  border-top: 1px solid var(--ac-border);
+  transition: border-color 0.3s;
+}
+
+/* Logo */
+.ac-logo {
+  text-align: center;
+  margin-top: 112px;
+}
+.ac-logo img { width: 12px; display: block; margin: 0 auto; }
+
+/* ===== Energy Label ===== */
+.energy-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #4ea5f5;
+  border-radius: 2px;
+  height: 70px;
+  width: 50px;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+}
+.energy-label .dots-row {
+  display: flex;
+  justify-content: center;
+}
+.energy-label .dot {
+  border-radius: 50%;
+  background-color: white;
+}
+.energy-label .bar-box {
+  margin: 2px 0;
+  height: 28px;
+  background: white;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+.energy-label .bar-row {
+  display: flex;
+  align-items: flex-end;
+  height: 3px;
+}
+.energy-label .bar-green  { background: green; height: 100%; }
+.energy-label .bar-arrow  {
+  margin-left: 0;
+  height: 3px;
+  border-top: 1.5px solid transparent;
+  border-right: 2px solid green;
+  border-bottom: 1.5px solid transparent;
+}
+.energy-label .level { margin-top: 1px; height: 2px; }
+.energy-label .level-lgreen  { background: lightgreen; width: 50%; }
+.energy-label .level-yellow  { background: #ffc107; width: 60%; }
+.energy-label .level-orange  { background: orange; width: 70%; }
+.energy-label .level-red     { background: red; width: 80%; }
+.energy-label .detail-box {
+  background: white;
+  height: 20px;
+  margin-bottom: 2px;
+  padding-top: 0.8px;
+}
+.energy-label .detail-box .sep { border-top: 1px solid; margin: 0.8px 0; }
+
+/* ===== AC Display (temperature screen) ===== */
+.ac-display {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  color: var(--ac-display);
+  text-align: left;
+  transition: color 0.3s;
+}
+.ac-display .mode-icon { font-size: 0.875rem; }
+.ac-display .temperature {
+  font-family: "Digital-7 Mono", monospace;
+  font-size: 2.25rem;
+  text-align: center;
+  text-shadow: 0 0 2px rgba(0,0,0,0.1);
+}
+.ac-display .unit {
+  font-family: "Digital-7 Mono", monospace;
+  font-size: 0.875rem;
+}
+
+/* ===== Fade transition ===== */
+.fade-target {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+.fade-target.show { opacity: 1; }
+
+/* Wind effect */
+.wind-effect {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+  opacity: 0.3;
+  transition: opacity 0.3s ease-in-out;
+}
+.wind-effect.off { opacity: 0; }
+.wind-line {
+  height: 40px;
+  width: 4px;
+  background-color: var(--ac-wind);
+  border-radius: 2px;
+  transition: background-color 0.3s;
+}
+.wind-line.left  { transform: rotate(10deg); }
+.wind-line.right { transform: rotate(-10deg); }
+.wind-line.center { margin: 0 80px; }
+
+/* ===== Remote Control ===== */
+.remote-control {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 24px 0;
+  gap: 8px;
+}
+
+.rc-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+.rc-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,0.2), 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12);
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
+  color: white;
+  user-select: none;
+}
+.rc-btn:hover  { transform: scale(1.08); box-shadow: 0 5px 8px -2px rgba(0,0,0,0.3), 0 8px 14px 0 rgba(0,0,0,0.18); }
+.rc-btn:active { transform: scale(0.95); }
+
+.rc-btn.cold  { background-color: #1976d2; }
+.rc-btn.power { background-color: #4caf50; }
+.rc-btn.power.on { background-color: #d32f2f; }
+.rc-btn.hot   { background-color: #ff9800; }
+.rc-btn.temp-up, .rc-btn.temp-down {
+  background-color: #9e9e9e;
+  font-size: 1.2rem;
+}
+
+/* Power button icon */
+.power-icon {
+  position: relative;
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+}
+.power-icon::before {
+  content: '';
+  position: absolute;
+  top: 2px; left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 12px;
+  background: white;
+  border-radius: 1px;
+}
+.power-icon::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 6px;
+  width: 12px; height: 12px;
+  border: 2px solid white;
+  border-radius: 50%;
+  clip-path: polygon(50% 0, 100% 0, 100% 100%, 0 100%, 0 0, 42% 0, 42% 35%, 58% 35%, 58% 0);
+}
+
+/* ===== Toast ===== */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  min-width: 300px;
+  padding: 12px 20px;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.875rem;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.3);
+  animation: toastIn 0.3s ease-out;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.toast.success { background-color: #2e7d32; }
+.toast.error   { background-color: #d32f2f; }
+.toast.info    { background-color: #1976d2; }
+.toast.warning { background-color: #ed6c02; }
+.toast .close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 1.2rem;
+  margin-left: 12px;
+  padding: 0 4px;
+  opacity: 0.8;
+}
+.toast .close-btn:hover { opacity: 1; }
+
+@keyframes toastIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Sat Filter ===== */
+body.cold-filter { filter: saturate(90%); }
+body.hot-filter  { filter: saturate(110%); }
+
+/* ===== Responsive ===== */
+@media (max-width: 400px) {
+  .ac-unit { height: 140px; }
+  .ac-logo { margin-top: 100px; }
+  .ac-led { top: 118px; }
+  .energy-label { transform: scale(0.85); transform-origin: top left; }
+  .ac-display { right: 16px; top: 20px; }
+  .ac-display .temperature { font-size: 1.8rem; }
+  .wind-line.center { margin: 0 50px; }
+  .wind-line { height: 32px; width: 3px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>便携小空调</h1>
+
+  <!-- AC Unit -->
+  <div class="ac-unit" id="acUnit">
+    <!-- Energy Label -->
+    <div class="energy-label">
+      <div class="dots-row">
+        <span class="dot" style="width:4px;height:4px;margin:0 2px"></span>
+        <span class="dot" style="width:4px;height:4px;margin:0 2px"></span>
+        <span class="dot" style="width:4px;height:4px;margin:0 2px"></span>
+        <span class="dot" style="width:4px;height:4px;margin:0 2px"></span>
+        <span class="dot" style="width:4px;height:4px;margin:0 2px"></span>
+        <span class="dot" style="width:4px;height:4px;margin:0 2px"></span>
+      </div>
+      <div class="bar-box">
+        <div class="bar-row">
+          <div class="bar-green" style="width:40%"></div>
+          <div class="bar-arrow" style="margin-left:0"></div>
+          <div class="bar-green" style="width:10%"></div>
+        </div>
+        <div class="level level-lgreen"></div>
+        <div class="level level-yellow"></div>
+        <div class="level level-orange"></div>
+        <div class="level level-red"></div>
+      </div>
+      <div class="detail-box">
+        <div class="dots-row">
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:black"></span>
+        </div>
+        <div class="sep"></div>
+        <div class="dots-row">
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.5px;height:1.5px;margin:0 0.8px;background:black"></span>
+        </div>
+        <div class="dots-row" style="margin-top:1px">
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+          <span class="dot" style="width:1.2px;height:1.2px;margin:0 0.8px;background:black"></span>
+        </div>
+      </div>
+      <div class="dots-row">
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+        <span class="dot" style="width:2px;height:2px;margin:0 0.8px;background:white"></span>
+      </div>
+    </div>
+
+    <!-- Display -->
+    <div class="ac-display fade-target" id="acDisplay">
+      <div class="mode-icon" id="modeIcon">❄️</div>
+      <div class="temperature">
+        <span id="tempValue">26</span><small class="unit">°C</small>
+      </div>
+    </div>
+
+    <!-- Logo -->
+    <div class="ac-logo">
+      <a href="https://github.com/YunYouJun/air-conditioner" target="_blank" rel="noopener" title="便携小空调">
+        <img src="yun-logo.svg" alt="logo" />
+      </a>
+    </div>
+
+    <!-- Air Outlet -->
+    <div class="ac-outlet"></div>
+
+    <!-- Status LED -->
+    <div class="ac-led" id="acLed"></div>
+  </div>
+
+  <!-- Wind Effect -->
+  <div class="wind-effect off" id="windEffect">
+    <div class="wind-line left"></div>
+    <div class="wind-line center"></div>
+    <div class="wind-line right"></div>
+  </div>
+
+  <!-- Remote Control -->
+  <div class="remote-control">
+    <div class="rc-row">
+      <button class="rc-btn cold" id="btnCold" title="制冷模式">❄️</button>
+      <button class="rc-btn power" id="btnPower" title="开关">
+        <span class="power-icon"></span>
+      </button>
+      <button class="rc-btn hot" id="btnHot" title="制热模式">☀️</button>
+    </div>
+    <button class="rc-btn temp-up" id="btnTempUp" title="升温">▲</button>
+    <button class="rc-btn temp-down" id="btnTempDown" title="降温">▼</button>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Dark Mode Toggle -->
+<button class="dark-toggle" id="darkToggle" title="切换深色模式">🌙</button>
+
+<!-- Audio Elements -->
+<audio id="audioDi" src="assets/audio/di.mp3" preload="auto"></audio>
+<audio id="audioAcWork" src="assets/audio/ac-work.mp3" preload="auto"></audio>
+<audio id="audioFan" src="assets/audio/air-extractor-fan.mp3" preload="auto"></audio>
+
+<script>
+(function() {
+  /* ===== Constants ===== */
+  var STORAGE_KEY = 'ac:state';
+  var MIN_TEMP = 16;
+  var MAX_TEMP = 31;
+  var NOISE_START = 2;    // seconds - fan noise start time
+  var NOISE_DURATION = 56; // seconds - fan loop duration
+  var TOAST_DURATION = 5000;
+
+  /* ===== State ===== */
+  var defaultState = { status: false, mode: 'cold', temperature: 26 };
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        // Validate
+        if (typeof parsed.status === 'boolean' &&
+            (parsed.mode === 'cold' || parsed.mode === 'hot') &&
+            typeof parsed.temperature === 'number') {
+          return parsed;
+        }
+      }
+    } catch(e) {}
+    return Object.assign({}, defaultState);
+  }
+
+  function saveState(state) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch(e) {}
+  }
+
+  var state = loadState();
+
+  /* ===== Audio ===== */
+  var playStartTimeout = null;
+  var playWorkTimeout = null;
+  var playWorkInterval = null;
+
+  function getAudio(id) { return document.getElementById(id); }
+
+  function playSound(id) {
+    try {
+      var el = getAudio(id);
+      if (el) { el.currentTime = 0; el.play().catch(function(){}); }
+    } catch(e) {}
+  }
+
+  function stopAllSounds() {
+    ['audioAcWork', 'audioFan'].forEach(function(id) {
+      var el = getAudio(id);
+      if (el) { el.pause(); el.currentTime = 0; }
+    });
+    if (playStartTimeout) { clearTimeout(playStartTimeout); playStartTimeout = null; }
+    if (playWorkTimeout) { clearTimeout(playWorkTimeout); playWorkTimeout = null; }
+    if (playWorkInterval) { clearInterval(playWorkInterval); playWorkInterval = null; }
+  }
+
+  function playWorkSound() {
+    var fan = getAudio('audioFan');
+    if (!fan) return;
+    fan.currentTime = 0;
+    fan.play().catch(function(){});
+    playWorkTimeout = setTimeout(function() {
+      playWorkInterval = setInterval(function() {
+        fan.currentTime = NOISE_START;
+      }, NOISE_DURATION * 1000);
+    }, NOISE_START * 1000);
+  }
+
+  function startAcSound() {
+    stopAllSounds();
+    var acWork = getAudio('audioAcWork');
+    if (!acWork) return;
+    acWork.currentTime = 0;
+    acWork.play().catch(function(){});
+    playStartTimeout = setTimeout(function() {
+      playWorkSound();
+    }, 8000);
+  }
+
+  function stopAcSound() {
+    stopAllSounds();
+    var fan = getAudio('audioFan');
+    if (fan) { fan.currentTime = NOISE_START + NOISE_DURATION; }
+  }
+
+  /* ===== Toast ===== */
+  var toastTimer = null;
+
+  function showToast(message, severity) {
+    severity = severity || 'info';
+    var container = document.getElementById('toastContainer');
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + severity;
+    toast.innerHTML = '<span>' + message + '</span><button class="close-btn">&times;</button>';
+
+    toast.querySelector('.close-btn').addEventListener('click', function() {
+      toast.remove();
+      if (toastTimer) clearTimeout(toastTimer);
+    });
+
+    container.appendChild(toast);
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {
+      toast.remove();
+    }, TOAST_DURATION);
+  }
+
+  /* ===== Render ===== */
+  function render() {
+    // Display
+    var display = document.getElementById('acDisplay');
+    var modeIcon = document.getElementById('modeIcon');
+    var tempValue = document.getElementById('tempValue');
+
+    if (state.status) {
+      display.classList.add('show');
+    } else {
+      display.classList.remove('show');
+    }
+
+    modeIcon.textContent = state.mode === 'cold' ? '❄️' : '☀️';
+    tempValue.textContent = state.temperature;
+
+    // LED
+    var led = document.getElementById('acLed');
+    if (state.status) {
+      led.classList.add('on');
+    } else {
+      led.classList.remove('on');
+    }
+
+    // Wind
+    var wind = document.getElementById('windEffect');
+    if (state.status) {
+      wind.classList.remove('off');
+    } else {
+      wind.classList.add('off');
+    }
+
+    // Power button
+    var btnPower = document.getElementById('btnPower');
+    if (state.status) {
+      btnPower.classList.add('on');
+    } else {
+      btnPower.classList.remove('on');
+    }
+
+    // Sat filter
+    if (state.status) {
+      if (state.mode === 'hot') {
+        document.body.classList.add('hot-filter');
+        document.body.classList.remove('cold-filter');
+      } else {
+        document.body.classList.add('cold-filter');
+        document.body.classList.remove('hot-filter');
+      }
+    } else {
+      document.body.classList.remove('cold-filter', 'hot-filter');
+    }
+  }
+
+  /* ===== Actions ===== */
+  function dispatch(action) {
+    switch (action.type) {
+      case 'increment':
+        if (state.temperature < MAX_TEMP) {
+          state.temperature += 1;
+        } else {
+          showToast('已经是最大温度啦！', 'error');
+          return;
+        }
+        break;
+      case 'decrement':
+        if (state.temperature > MIN_TEMP) {
+          state.temperature -= 1;
+        } else {
+          showToast('已经是最小温度啦！', 'error');
+          return;
+        }
+        break;
+      case 'toggleStatus':
+        state.status = !state.status;
+        if (state.status) {
+          startAcSound();
+        } else {
+          stopAcSound();
+        }
+        break;
+      case 'setMode':
+        if (state.mode !== action.mode) {
+          state.mode = action.mode;
+          // Recommendation toast
+          var recTemp = action.mode === 'cold' ? 26 : 20;
+          var tooHigh = action.mode === 'cold' && state.temperature < recTemp;
+          var tooLow = action.mode === 'hot' && state.temperature > recTemp;
+          if (tooHigh || tooLow) {
+            var word = action.mode === 'cold' ? '冷' : '热';
+            var dir = action.mode === 'cold' ? '上' : '下';
+            showToast(
+              '建议将空调的制' + word + '温度调至 ' + recTemp + ' 度以' + dir + '，为节能减排贡献一份力量！',
+              'success'
+            );
+          }
+        }
+        break;
+      default:
+        return;
+    }
+    saveState(state);
+    render();
+  }
+
+  /* ===== Button handlers ===== */
+  function playDi() {
+    playSound('audioDi');
+  }
+
+  document.getElementById('btnCold').addEventListener('click', function() {
+    playDi();
+    dispatch({ type: 'setMode', mode: 'cold' });
+  });
+
+  document.getElementById('btnHot').addEventListener('click', function() {
+    playDi();
+    dispatch({ type: 'setMode', mode: 'hot' });
+  });
+
+  document.getElementById('btnPower').addEventListener('click', function() {
+    playDi();
+    dispatch({ type: 'toggleStatus' });
+  });
+
+  document.getElementById('btnTempUp').addEventListener('click', function() {
+    playDi();
+    dispatch({ type: 'increment' });
+  });
+
+  document.getElementById('btnTempDown').addEventListener('click', function() {
+    playDi();
+    dispatch({ type: 'decrement' });
+  });
+
+  /* ===== Dark Mode ===== */
+  function getDarkMode() {
+    var stored = localStorage.getItem('ac:dark');
+    if (stored !== null) return stored === 'true';
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  function setDarkMode(dark) {
+    if (dark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('ac:dark', String(dark));
+    document.getElementById('darkToggle').textContent = dark ? '☀️' : '🌙';
+  }
+
+  var isDark = getDarkMode();
+  setDarkMode(isDark);
+
+  document.getElementById('darkToggle').addEventListener('click', function() {
+    isDark = !isDark;
+    setDarkMode(isDark);
+  });
+
+  // Listen for system theme changes
+  if (window.matchMedia) {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+      if (localStorage.getItem('ac:dark') === null) {
+        setDarkMode(e.matches);
+      }
+    });
+  }
+
+  /* ===== Keyboard support ===== */
+  document.addEventListener('keydown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    switch (e.key) {
+      case 'ArrowUp':   playDi(); dispatch({ type: 'increment' }); break;
+      case 'ArrowDown': playDi(); dispatch({ type: 'decrement' }); break;
+      case ' ':
+        e.preventDefault();
+        playDi();
+        dispatch({ type: 'toggleStatus' });
+        break;
+    }
+  });
+
+  /* ===== Cross-tab sync ===== */
+  window.addEventListener('storage', function(e) {
+    if (e.key === STORAGE_KEY && e.newValue) {
+      try {
+        var newState = JSON.parse(e.newValue);
+        if (newState) {
+          // Sync sound based on status change
+          if (state.status !== newState.status) {
+            if (newState.status) {
+              startAcSound();
+            } else {
+              stopAcSound();
+            }
+          }
+          state = newState;
+          render();
+        }
+      } catch(ex) {}
+    }
+  });
+
+  /* ===== Init ===== */
+  // If AC was on when page loads, start the fan sound
+  if (state.status) {
+    stopAllSounds();
+    // Don't play startup sound on page load, just the fan
+    var fan = getAudio('audioFan');
+    if (fan) {
+      fan.currentTime = NOISE_START;
+      fan.play().catch(function(){});
+    }
+  }
+  render();
+})();
+</script>
+
+</body>
+</html>
